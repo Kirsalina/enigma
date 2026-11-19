@@ -1064,6 +1064,24 @@ body.scr-open .states{display:block}
 .dcard,.drw .th,.drw .grp,.drw .desc,.drw .dlg-ft .btn.s{box-shadow:0 0 0 1px rgba(233,233,237,.07),0 16px 40px rgba(0,0,0,.45)!important}
 .drw .dlg>.dcard:first-child,.drw .scroll>.dcard:first-child,.drw .dlg>.sl:first-child{box-shadow:0 0 0 1px rgba(233,233,237,.07),inset 0 1.5px 0 rgba(198,171,252,.75),0 -6px 18px -10px rgba(198,171,252,.45),0 16px 40px rgba(0,0,0,.45)!important}
 .drw .dlg.secs>.sl{box-shadow:0 0 0 1px rgba(233,233,237,.07),inset 0 1.5px 0 rgba(198,171,252,.75),0 16px 40px rgba(0,0,0,.45)!important}
+/* Возврат: у (i) снова обводка вторичной кнопки, как было согласовано */
+.bc-act .btn.sq,.tile .side .btn.sq,.acts .btn.sq,.tb-act .two .btn.sq{background:rgba(233,233,237,.03);box-shadow:inset 0 0 0 1.5px rgba(150,144,171,.32);color:var(--text)}
+/* Карточка: без линии поперёк */
+.bc-top,.bc-bd{border:0!important;box-shadow:none!important}
+.bc-top{border-bottom:0}
+/* FAQ той же ширины, что и шаги */
+.faq{max-width:none}
+/* Переключатель: «Мой кошелёк USD» тихо, код серым */
+.curf2 .c{color:var(--muted);margin-left:4px}
+.curf2 button.on .c{color:var(--selected)}
+.curf2 .c{padding:0!important;height:auto!important;display:inline!important;margin-left:5px;background:none!important}
+/* Метка снова плашкой, как «Gold и выше» (по просьбе Алины 19.11) */
+.bc-top .chip2,.thc .chip2{height:22px;padding:0 8px;border-radius:6px;background:rgba(13,12,22,.55);box-shadow:inset 0 0 0 1px rgba(233,233,237,.10);font-size:11px;font-weight:600;letter-spacing:.2px;color:var(--text);justify-self:start;display:inline-flex;margin:0 0 8px}
+.bc-top .chip2.lv,.thc .chip2.lv{color:var(--selected)}
+/* Единица под числом, когда число длинное */
+[data-ud] .of b{flex-wrap:wrap;row-gap:0}
+[data-ud] .of b .u{flex-basis:100%;font-size:13px;line-height:16px}
+.lz{opacity:1}
 </style>
 </head>
 <body>
@@ -1177,7 +1195,7 @@ function num(n,c=CUR){const C=CURS[c];let v=n*C.rate;
   return f?i+","+f:i}
 const m=(n,c=CUR)=>CURS[c].pre?CURS[c].sym+num(n,c):num(n,c)+NB+CURS[c].sym;
 /* Для крупных сумм: <span class=n>число</span><span class=u>единица</span>; $ остаётся префиксом */
-const mh=(n,sign="",c=CUR)=>{const nn=num(n,c);if(nn[0]==="<")sign="";const v=sign+(CURS[c].pre?CURS[c].sym:"")+nn,t=v.replace(/<[^>]+>/g,"");return CURS[c].pre?`<span class="n" title="${t}">${v}</span>`:`<span class="n" title="${t} ${CURS[c].sym}">${v}</span><span class="u">${CURS[c].sym}</span>`};
+const mh=(n,sign="",c=CUR)=>{const nn=num(n,c);if(nn.startsWith("<"+NB))sign="";const v=sign+(CURS[c].pre?CURS[c].sym:"")+nn,t=v.replace(/<[^>]+>/g,"");return CURS[c].pre?`<span class="n" title="${t}">${v}</span>`:`<span class="n" title="${t} ${CURS[c].sym}">${v}</span><span class="u">${CURS[c].sym}</span>`};
 const zOf=t=>{const L=t.replace(/<[^>]+>/g,"").replace(/[^0-9,+%$]/g,"").length;return L<=5?1:L<=7?2:L<=9?3:4};
 const pct=v=>`+${v}${NB}%`;
 const per=b=>{const h=b.hrs??(b.days||0)*24;return !h?"":h%24?pl(h,"час","часа","часов"):pl(h/24,"день","дня","дней")};
@@ -1238,7 +1256,7 @@ function grid(list,o={}){
 }
 const GLYPH={USD:"$",EUR:"€",RUB:"₽",USDT:"₮",BTC:"₿",BTC12:"₿"};
 const curSw=keys=>{const my=WALLETS?WALLETS[1]||WALLETS[0]:PC(), all=PF==="all";
-  return `<span class="segm curf2" role="tablist" aria-label="Валюта бонусов" data-f="Валюта кошелька игрока или все"><button role="tab" aria-selected="${!all}" class="${all?"":"on"}" onclick="PF=${WALLETS?`'${my}'`:"null"};draw()">${code(my)}</button><button role="tab" aria-selected="${all}" class="${all?"on":""}" onclick="PF='all';draw()">Все валюты</button></span>`};
+  return `<span class="segm curf2" role="tablist" aria-label="Валюта бонусов" data-f="Валюта кошелька игрока или все"><button role="tab" aria-selected="${!all}" class="${all?"":"on"}" onclick="PF=${WALLETS?`'${my}'`:"null"};draw()">Мой кошелёк <span class="c">${code(my)}</span></button><button role="tab" aria-selected="${all}" class="${all?"on":""}" onclick="PF='all';draw()">Все валюты</button></span>`};
 function catalog(keys,o={}){
   const all=sortBonuses(keys), open=all.filter(b=>!b.lvl||(!o.guest&&fits(b))), club=all.filter(b=>b.lvl&&(o.guest||!fits(b))).sort((a,b)=>a.lvl[0][0]-b.lvl[0][0]);
   const wel=PF==="all"||forCur(B.w1,curNow());
@@ -1436,7 +1454,7 @@ function showDlg(html,focusSel,title){const d=document.getElementById("dlg");d.i
   const op=document.activeElement, w=d.querySelector(".drw");
   d.classList.toggle("pop",!ph);
   if(!ph){w.style.position="absolute";const br=d.getBoundingClientRect(),W=Math.min(420,br.width-24);w.style.width=W+"px";
-    const o=op&&op.closest&&op.closest("#frame")?op.getBoundingClientRect():{bottom:64,right:br.right-12,top:64};
+    const o={bottom:document.querySelector("#frame .site-h")?.getBoundingClientRect().bottom||64,right:br.right-12,top:64};
     let left=o.right-br.left-W; left=Math.max(12,Math.min(left,br.width-W-12));
     const h=w.offsetHeight; let top=o.bottom-br.top+8; if(top+h>br.height-12) top=Math.max(56-br.top,o.top-br.top-8-h); if(top<56-br.top) top=Math.max(56-br.top,br.height-12-h);
     w.style.left=left+"px"; w.style.top=top+"px";}
@@ -1552,7 +1570,9 @@ function fitAll(){
   const wide=!/f(390|820)/.test(document.getElementById("frame").className);
   
   const over=e=>e.scrollWidth>e.clientWidth+1;
-  document.querySelectorAll("#frame .grid, #frame .sizes, #dlg .th").forEach(g=>{for(let z=1;z<=6;z++){g.dataset.z=z;if(![...g.querySelectorAll(".cw:not(.hid) .of b, .of b")].filter(b=>b.offsetParent).some(over))break}});
+  /* Длинная сумма: сначала единица уходит на строку ниже, потом кегль ряда уменьшается (не меньше 22) */
+  document.querySelectorAll("#frame .grid, #frame .sizes, #dlg .th").forEach(g=>{delete g.dataset.ud;const bad=()=>[...g.querySelectorAll(".cw:not(.hid) .of b, .of b")].filter(b=>b.offsetParent).some(over);
+    let done=false;for(const [z,ud] of [[1,0],[1,1],[2,1],[3,1],[4,1],[5,1],[6,1]]){g.dataset.z=z;if(ud)g.dataset.ud=1;else delete g.dataset.ud;if(!bad()){done=true;break}}});
   document.querySelectorAll("#frame [data-fit], #dlg [data-fit]").forEach(e=>{e.style.fontSize="";const base=parseFloat(getComputedStyle(e).fontSize);
     for(const k of [1,.86,.74,.64,.56]){e.style.fontSize=(base*k).toFixed(1)+"px";if(!over(e))break}});
 }
