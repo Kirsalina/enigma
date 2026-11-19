@@ -1025,34 +1025,7 @@ body.scr-open .states{display:block}
 .drw .grp .kv{font-size:14px}.drw .grp .kv span{color:var(--text)}.drw .grp .kv b{font-weight:600;color:var(--title)}
 .drw .grp .eyebrow{font-weight:700;color:var(--muted);letter-spacing:1px}
 .drw .dlg-ft .btn{height:48px}
-/* ═════════ Тише: плоская карточка без купонных вырезов, градиентов и плашек ═════════ */
-.cw{filter:none!important}
-.bc,.cw.wide .bc{-webkit-mask:none!important;mask:none!important;background:var(--card);box-shadow:0 0 0 1px rgba(233,233,237,.07);border-radius:16px}
-.cw.hot .bc{box-shadow:0 0 0 1px rgba(198,171,252,.55)}
-@media (hover:hover){.cw.live:hover .bc{box-shadow:0 0 0 1px rgba(198,171,252,.35)}}
-.bc-top,.cw.dim .bc-top,.cw.lock .bc-top{background:none!important;height:auto;min-height:0;padding:20px 20px 0;align-items:center}
-.bc-top::after{display:none!important}
-.bc-top .art,.bc-top .art.club{width:80px;height:80px;margin:0;align-self:center}
-.f390 .bc-top .art,.f390 .bc-top .art.club{width:72px;height:72px}
-.bc-top .tx{align-self:center}
-.of>span{color:var(--muted);font-weight:500}
-/* Метка: просто строка текста над суммой, без плашки */
-.bc-top{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:12px}
-.bc-top .chip2{position:static;grid-column:1;grid-row:1;max-width:100%;height:auto;padding:0;margin:0 0 4px;background:none;box-shadow:none;backdrop-filter:none;font-size:12px;font-weight:500;letter-spacing:0;color:var(--muted)}
-.bc-top .chip2.lv{color:var(--selected)}
-.bc-top .tx{grid-column:1;grid-row:2}
-.bc-top .art{grid-column:2;grid-row:1/3}
-.bc-bd{padding:16px 20px 20px}
-/* Кнопка условий без рамки: меньше коробочек */
-.bc-act .btn.sq{background:none;box-shadow:none;color:var(--muted)}
-@media (hover:hover){.bc-act .btn.sq:hover{color:var(--title);background:rgba(233,233,237,.05)}}
-/* Плитки кассы и регистрации: без вырезов и пунктира */
-.tw2{filter:none!important}
-.tile{-webkit-mask:none!important;mask:none!important;background:var(--card);box-shadow:0 0 0 1px rgba(233,233,237,.07)}
-.tw2.on .tile{box-shadow:0 0 0 1px rgba(198,171,252,.6);background:var(--card)}
-.tile .stub,.tile.none .stub,.tw2.on .tile .stub,.tw2.off .tile .stub{background:none!important}
-.tile .stub::after{display:none}
-.tile .side .btn.sq{background:none;box-shadow:none;color:var(--muted)}
+/* (19.11 вечер) Плоская карточка без вырезов откатена: Алина хочет купон с вырезами и пунктиром */
 /* «Как работает бонус»: без линий-соединителей */
 .how .s::after{display:none}
 .how .s .art{width:64px;height:64px}
@@ -1066,9 +1039,6 @@ body.scr-open .states{display:block}
 .drw .dlg.secs>.sl{box-shadow:0 0 0 1px rgba(233,233,237,.07),inset 0 1.5px 0 rgba(198,171,252,.75),0 16px 40px rgba(0,0,0,.45)!important}
 /* Возврат: у (i) снова обводка вторичной кнопки, как было согласовано */
 .bc-act .btn.sq,.tile .side .btn.sq,.acts .btn.sq,.tb-act .two .btn.sq{background:rgba(233,233,237,.03);box-shadow:inset 0 0 0 1.5px rgba(150,144,171,.32);color:var(--text)}
-/* Карточка: без линии поперёк */
-.bc-top,.bc-bd{border:0!important;box-shadow:none!important}
-.bc-top{border-bottom:0}
 /* FAQ той же ширины, что и шаги */
 .faq{max-width:none}
 /* Переключатель: «Мой кошелёк USD» тихо, код серым */
@@ -1082,6 +1052,11 @@ body.scr-open .states{display:block}
 [data-ud] .of b{flex-wrap:wrap;row-gap:0}
 [data-ud] .of b .u{flex-basis:100%;font-size:13px;line-height:16px}
 .lz{opacity:1}
+/* Купон: метка-плашка в углу, как раньше */
+.bc-top .chip2{position:absolute;left:12px;top:12px;margin:0}
+.f390 .bc-top .chip2{left:10px;top:10px}
+/* Выпадашка: страница позади затемнена и размыта, как панель уведомлений на сайте */
+.dlg-bg.pop{background:rgba(8,7,12,.62);backdrop-filter:blur(6px)}
 </style>
 </head>
 <body>
