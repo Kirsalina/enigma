@@ -979,6 +979,35 @@ body.scr-open .states{display:block}
 .drw .cxr{margin-bottom:20px}
 .drw-h{align-items:center;justify-items:initial}
 .tile.none .stub .art{width:56px;height:56px}
+/* ── Дровер как выпадашка кошелька на сайте: стопка отдельных карточек, кнопки отдельной строкой ── */
+.drw{background:none;box-shadow:none;border-radius:0;overflow:visible;gap:6px}
+.drw .dlg{background:none!important;box-shadow:none!important;display:flex;flex-direction:column;gap:6px;max-height:calc(100vh - 68px);overflow:hidden}
+.f390 .drw .dlg{max-height:90vh}
+.dcard,.drw .th,.drw .grp,.drw .desc{border-radius:14px;background:rgba(27,25,34,.97);box-shadow:0 0 0 1px rgba(233,233,237,.08),inset 0 1px 0 rgba(233,233,237,.10),0 16px 40px rgba(0,0,0,.45);backdrop-filter:blur(12px)}
+.drw .scroll{display:flex;flex-direction:column;gap:6px;overflow:auto;min-height:0}
+.drw .dlg-bd{display:flex;flex-direction:column;gap:6px;padding:0;overflow:visible}
+.drw .th{flex:none;min-height:108px}
+.drw .th::after{display:none}
+.drw .desc{margin:0;padding:14px 16px;font-size:14px;line-height:20px}
+.drw .grp{padding:12px 16px 4px}
+.drw .grp .eyebrow{margin:0 0 4px;color:var(--muted);font-size:11px;letter-spacing:1.1px}
+.drw .grp .box{background:none;box-shadow:none;padding:0;border-radius:0}
+.drw .grp .kv{min-height:48px}
+.drw .grp .kv:first-child{border-top:0}
+.drw .consent{padding:4px 4px 0;margin:0}
+.drw .dlg-ft{flex:none;padding:0;border:0;box-shadow:none!important;background:none;gap:6px}
+.drw .dlg-ft .btn{height:52px;border-radius:12px}
+.drw .dlg-ft .btn.s{background:rgba(27,25,34,.97);box-shadow:0 0 0 1px rgba(233,233,237,.08),inset 0 1px 0 rgba(233,233,237,.10)}
+.drw .dcard{padding:16px}
+.dtitle{margin:0 0 14px;font-size:16px;line-height:20px;font-weight:600;color:var(--title)}
+.drw .cxb{margin:0}
+.drw .cxr{margin:0;padding:4px 16px}
+.drw .cxr .kv{min-height:48px}
+.drw .sl{padding:12px 8px 8px}.drw .sl .eyebrow{display:block;padding:0 12px 6px;color:var(--muted)}
+.f390 .drw{padding:0 8px 8px}
+.drw .dlg.terms .th{border-radius:14px;overflow:hidden}
+.drw .dlg .cxr{margin:0}
+.drw .dlg.cancel .dlg-ft{padding-top:0}
 </style>
 </head>
 <body>
@@ -1361,16 +1390,16 @@ function openTerms(k,ctx){
   showDlg(`<div class="dlg terms" role="dialog" aria-modal="true" aria-labelledby="dt"><div class="scroll">
     <div class="th ${b.art?"":"noart"}">${art(b)}${label(b,!fits(b),false)}<div class="of"><b>${amtH(b)}</b><span>${cap(b)}</span></div><h3 id="dt" data-f="Название">${b.name}</h3></div>
     <div class="dlg-bd">${b.desc?`<p class="desc" data-f="Описание (простой текст из админки)">${b.desc}</p>`:""}${termGroups(b)}${take?`<p class="consent" data-f="Правила бонусов (версия)">Нажимая «Получить», вы принимаете условия бонуса и Правила бонусной программы.</p>`:""}</div></div>
-    <div class="dlg-ft" ${take?"":`style="grid-template-columns:1fr"`}>${foot}</div></div>`,".dlg-ft .btn.s","Условия бонуса");
+    <div class="dlg-ft" ${take?"":`style="grid-template-columns:1fr"`}>${foot}</div></div>`,".dlg-ft .btn.s");
 }
 /* Отмена: строки последствий, как группа в условиях. Без «сгорит» и без красной суммы */
 function openCancel(k){
   const a=PB[k], act=ST.act===k, nx=act&&ST.queue[0];
   const kv=(l,v,c="")=>`<div class="kv"><span>${l}</span><b class="${c}">${v}</b></div>`;
   showDlg(`<div class="dlg cancel" role="dialog" aria-modal="true" aria-label="Отменить бонус?">
-    <div class="cxb">${art(B[k])||"<span></span>"}<div style="min-width:0"><div class="t" data-f="Название">${B[k].name}</div><div class="v" data-fit data-f="Сумма бонуса">${mh(a.amt)}</div></div></div>
-    <div class="cxr">${kv("Бонусный баланс","−"+m(a.amt))}${a.done?kv("Отыграно",`${m(a.done)} из ${m(a.need)}`):""}${kv("Ваш баланс не изменится",ST.zero?m(0):m(215),"g")}</div>
-    <div class="dlg-ft"><button class="btn s red" onclick="doCancel('${k}')">Отменить бонус</button><button class="btn p" onclick="closeDlg()">Оставить</button></div></div>`,null,"Отменить бонус?");
+    <div class="dcard"><h3 class="dtitle">Отменить бонус?</h3><div class="cxb">${art(B[k])||"<span></span>"}<div style="min-width:0"><div class="t" data-f="Название">${B[k].name}</div><div class="v" data-fit data-f="Сумма бонуса">${mh(a.amt)}</div></div></div>
+    </div><div class="cxr dcard">${kv("Бонусный баланс","−"+m(a.amt))}${a.done?kv("Отыграно",`${m(a.done)} из ${m(a.need)}`):""}${kv("Ваш баланс не изменится",ST.zero?m(0):m(215),"g")}</div>
+    <div class="dlg-ft"><button class="btn s red" onclick="doCancel('${k}')">Отменить бонус</button><button class="btn p" onclick="closeDlg()">Оставить</button></div></div>`);
 }
 function doCancel(k){
   const wasAct=ST.act===k;
@@ -1388,7 +1417,7 @@ function closeNtf(){document.getElementById("ntf")?.remove()}
 document.addEventListener("click",e=>{const n=document.getElementById("ntf"); if(n&&!e.composedPath().some(x=>x.id==="ntf"||x.id==="states"||x.classList?.contains("bell"))) n.remove()});
 /* Телефон: вместо трёх рядов вкладок: один выбор раздела, список открывается снизу */
 function openSections(tab,guest){
-  showDlg(`<div class="dlg secs" role="dialog" aria-modal="true" aria-label="Разделы"><div class="sl">${TABS.filter(([n])=>!(guest&&n==="История")).map(([n,ic])=>`<button class="${n===tab?"on":""}" onclick="closeDlg();${n==="История"?"go('hist')":n==="Бонусы"?"go('main')":""}">${ic}<span>${n}</span>${n===tab?I.tick:""}</button>`).join("")}</div></div>`,".sl .on","Награды");
+  showDlg(`<div class="dlg secs" role="dialog" aria-modal="true" aria-label="Разделы"><div class="sl dcard"><span class="eyebrow">Награды</span>${TABS.filter(([n])=>!(guest&&n==="История")).map(([n,ic])=>`<button class="${n===tab?"on":""}" onclick="closeDlg();${n==="История"?"go('hist')":n==="Бонусы"?"go('main')":""}">${ic}<span>${n}</span>${n===tab?I.tick:""}</button>`).join("")}</div></div>`,".sl .on");
 }
 function getBonus(k){go("cashpick",k)}
 
