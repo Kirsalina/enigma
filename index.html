@@ -1008,6 +1008,58 @@ body.scr-open .states{display:block}
 .drw .dlg.terms .th{border-radius:14px;overflow:hidden}
 .drw .dlg .cxr{margin:0}
 .drw .dlg.cancel .dlg-ft{padding-top:0}
+/* Выпадашка без затемнения: страница остаётся видна, клик мимо закрывает */
+.dlg-bg.pop{background:transparent;backdrop-filter:none;padding:0}
+.dlg-bg.pop .drw{max-height:calc(100vh - 80px)}
+.dlg-bg.pop .drw .dlg{max-height:calc(100vh - 80px)}
+/* Карточка-строка вместо верха купона: арт, название, сумма, как строка кошелька */
+.thc{display:grid;grid-template-columns:56px minmax(0,1fr);gap:14px;align-items:center;padding:14px 16px!important;position:relative}
+.thc .art{width:56px;height:56px}
+.thc h3{margin:0;font-size:15px;line-height:20px;font-weight:600;color:var(--title)}
+.thc .am{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-top:2px}
+.thc .am b{display:flex;gap:.2em;align-items:baseline;font-size:20px;line-height:24px;font-weight:600;color:var(--selected);white-space:nowrap;min-width:0}
+.thc .am b .u{font-size:12px}
+.thc .am>span{font-size:13px;color:var(--muted)}
+.thc .chip2{position:static;grid-column:2;justify-self:start;margin-top:2px}
+/* Строки как в кошельке: 15px, значение жирное справа */
+.drw .grp .kv{font-size:14px}.drw .grp .kv span{color:var(--text)}.drw .grp .kv b{font-weight:600;color:var(--title)}
+.drw .grp .eyebrow{font-weight:700;color:var(--muted);letter-spacing:1px}
+.drw .dlg-ft .btn{height:48px}
+/* ═════════ Тише: плоская карточка без купонных вырезов, градиентов и плашек ═════════ */
+.cw{filter:none!important}
+.bc,.cw.wide .bc{-webkit-mask:none!important;mask:none!important;background:var(--card);box-shadow:0 0 0 1px rgba(233,233,237,.07);border-radius:16px}
+.cw.hot .bc{box-shadow:0 0 0 1px rgba(198,171,252,.55)}
+@media (hover:hover){.cw.live:hover .bc{box-shadow:0 0 0 1px rgba(198,171,252,.35)}}
+.bc-top,.cw.dim .bc-top,.cw.lock .bc-top{background:none!important;height:auto;min-height:0;padding:20px 20px 0;align-items:center}
+.bc-top::after{display:none!important}
+.bc-top .art,.bc-top .art.club{width:80px;height:80px;margin:0;align-self:center}
+.f390 .bc-top .art,.f390 .bc-top .art.club{width:72px;height:72px}
+.bc-top .tx{align-self:center}
+.of>span{color:var(--muted);font-weight:500}
+/* Метка: просто строка текста над суммой, без плашки */
+.bc-top{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:12px}
+.bc-top .chip2{position:static;grid-column:1;grid-row:1;max-width:100%;height:auto;padding:0;margin:0 0 4px;background:none;box-shadow:none;backdrop-filter:none;font-size:12px;font-weight:500;letter-spacing:0;color:var(--muted)}
+.bc-top .chip2.lv{color:var(--selected)}
+.bc-top .tx{grid-column:1;grid-row:2}
+.bc-top .art{grid-column:2;grid-row:1/3}
+.bc-bd{padding:16px 20px 20px}
+/* Кнопка условий без рамки: меньше коробочек */
+.bc-act .btn.sq{background:none;box-shadow:none;color:var(--muted)}
+@media (hover:hover){.bc-act .btn.sq:hover{color:var(--title);background:rgba(233,233,237,.05)}}
+/* Плитки кассы и регистрации: без вырезов и пунктира */
+.tw2{filter:none!important}
+.tile{-webkit-mask:none!important;mask:none!important;background:var(--card);box-shadow:0 0 0 1px rgba(233,233,237,.07)}
+.tw2.on .tile{box-shadow:0 0 0 1px rgba(198,171,252,.6);background:var(--card)}
+.tile .stub,.tile.none .stub,.tw2.on .tile .stub,.tw2.off .tile .stub{background:none!important}
+.tile .stub::after{display:none}
+.tile .side .btn.sq{background:none;box-shadow:none;color:var(--muted)}
+/* «Как работает бонус»: без линий-соединителей */
+.how .s::after{display:none}
+.how .s .art{width:64px;height:64px}
+/* Активный бонус в кассе и «Следующие»: тоже без лишних рамок у (i) */
+.acts .btn.sq,.tb-act .two .btn.sq{background:none;box-shadow:none;color:var(--muted)}
+.cw .row b{color:var(--text)!important}
+.thc .chip2{background:none;box-shadow:none;backdrop-filter:none;padding:0;height:auto;font-size:12px;font-weight:500;color:var(--muted)}.thc .chip2.lv{color:var(--selected)}
 </style>
 </head>
 <body>
@@ -1376,7 +1428,16 @@ function showDlg(html,focusSel,title){const d=document.getElementById("dlg");d.i
   d.style.display="flex"; d.style.justifyContent=ph?"center":"flex-end"; d.style.alignItems=ph?"flex-end":"flex-start";
   const g=d.querySelector(".dlg"),sc=g.querySelector(".scroll");
   if(sc){const f=()=>g.classList.toggle("more",sc.scrollHeight-sc.scrollTop-sc.clientHeight>2);sc.onscroll=f;f()}
-  window.__opener=document.activeElement; (g.querySelector(focusSel||".dlg-ft .btn.p")||g.querySelector("button")).focus({preventScroll:true}); fitAll();}
+  /* ПК и планшет: выпадашка у кнопки, которая её открыла (как кошелёк в шапке сайта), без затемнения */
+  const op=document.activeElement, w=d.querySelector(".drw");
+  d.classList.toggle("pop",!ph);
+  if(!ph){w.style.position="absolute";const br=d.getBoundingClientRect(),W=Math.min(420,br.width-24);w.style.width=W+"px";
+    const o=op&&op.closest&&op.closest("#frame")?op.getBoundingClientRect():{bottom:64,right:br.right-12,top:64};
+    let left=o.right-br.left-W; left=Math.max(12,Math.min(left,br.width-W-12));
+    const h=w.offsetHeight; let top=o.bottom-br.top+8; if(top+h>br.height-12) top=Math.max(56-br.top,o.top-br.top-8-h); if(top<56-br.top) top=Math.max(56-br.top,br.height-12-h);
+    w.style.left=left+"px"; w.style.top=top+"px";}
+  else{w.style.position="";w.style.left=w.style.top=w.style.width=""}
+  window.__opener=op; (g.querySelector(focusSel||".dlg-ft .btn.p")||g.querySelector("button")).focus({preventScroll:true}); fitAll();}
 /* Фокус не уходит из окна */
 document.addEventListener("keydown",e=>{const d=document.getElementById("dlg");if(e.key!=="Tab"||!d||d.style.display!=="flex")return;
   const f=[...d.querySelectorAll("button,a")].filter(x=>!x.disabled&&x.offsetParent);if(!f.length)return;
@@ -1388,7 +1449,7 @@ function openTerms(k,ctx){
     :ctx==="reg"?close+`<button class="btn p" onclick="closeDlg();setReg('reg')">Выбрать</button>`
     :!take?close:close+`<button class="btn p" onclick="closeDlg();${ctx==="guest"?(k==="reg"?"go('reg','reg')":"go('reg')"):`getBonus('${k}')`}">Получить</button>`;
   showDlg(`<div class="dlg terms" role="dialog" aria-modal="true" aria-labelledby="dt"><div class="scroll">
-    <div class="th ${b.art?"":"noart"}">${art(b)}${label(b,!fits(b),false)}<div class="of"><b>${amtH(b)}</b><span>${cap(b)}</span></div><h3 id="dt" data-f="Название">${b.name}</h3></div>
+    <div class="dcard thc">${art(b)}<div class="tx"><h3 id="dt" data-f="Название">${b.name}</h3><div class="am"><b data-fit>${amtH(b)}</b>${cap(b)?`<span>${cap(b)}</span>`:""}</div></div>${label(b,!fits(b),false)}</div>
     <div class="dlg-bd">${b.desc?`<p class="desc" data-f="Описание (простой текст из админки)">${b.desc}</p>`:""}${termGroups(b)}${take?`<p class="consent" data-f="Правила бонусов (версия)">Нажимая «Получить», вы принимаете условия бонуса и Правила бонусной программы.</p>`:""}</div></div>
     <div class="dlg-ft" ${take?"":`style="grid-template-columns:1fr"`}>${foot}</div></div>`,".dlg-ft .btn.s");
 }
