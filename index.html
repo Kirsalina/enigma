@@ -1481,6 +1481,14 @@ button.ava{border:0;cursor:pointer;font:inherit;font-weight:700}
 .pdlg .pw-d .pok{color:var(--green)!important;font-size:14px!important}.pdlg .pd-h>span{font-size:13px}
 /* плитка всегда заполняет обёртку, иначе снизу видна полоса цвета обводки */
 .tw2{display:flex!important;flex-direction:column}.tw2>.tile{flex:1 1 auto;width:100%}
+.toast .inf{display:grid;place-items:center;color:var(--muted)}.toast .inf svg{width:20px;height:20px}
+/* Профиль: прогресс тем же кольцом, что в активном бонусе (маленькое) */
+.pf-b .r{grid-template-columns:72px minmax(0,1fr)!important}
+.pf-b .ring{width:72px;height:72px;grid-area:auto}.pf-b .ring .art{width:50px;height:50px}
+.pf-b .ring .pc{height:18px;line-height:18px;font-size:10px;padding:0 6px;bottom:-6px}
+.pf-b .tx .nm{display:block;margin-top:2px;font-size:12px;color:var(--muted)}
+.pf-b .ring svg{width:100%!important;height:100%!important;color:inherit}
+.pf-b .ring .art{width:50px!important;height:50px!important}
 </style>
 </head>
 <body>
@@ -1494,41 +1502,42 @@ button.ava{border:0;cursor:pointer;font:inherit;font-weight:700}
   <nav class="states" id="states">
     <small>Rewards → Бонусы</small>
     <button data-s="main">1. Отыгрывается + следующие</button>
-    <button data-s="soon">2. Последний день отыгрыша</button>
-    <button data-s="zero">3. На балансе $0</button>
-    <button data-s="regdone">4. После регистрации с бонусом</button>
-    <button data-s="noact">5. Новый игрок</button>
-    <button data-s="lvbronze">6. Игрок Bronze</button>
-    <button data-s="lvgold">7. Игрок Gold</button>
-    <button data-s="lvdiamond">8. Игрок Emerald</button>
-    <button data-s="guest">9. Гость</button>
-    <button data-s="longq">10. 12 бонусов в очереди</button>
-    <button data-s="profile">11. Профиль: активный бонус</button>
-    <button data-s="profilenone">12. Профиль: бонуса нет</button>
-    <button data-s="promo">13. Промокод: поле</button>
-    <button data-s="promoerr">14. Промокод: не действует</button>
-    <button data-s="promoexp">15. Промокод: истёк (тот же текст)</button>
-    <button data-s="promook">16. Промокод: активирован, бонус в списке</button>
-    <button data-s="promoinst">17. Промокод: активирован, бонус в очереди</button>
-    <button data-s="cryptolong">18. Крипта: самая длинная сумма ($1 в BTC)</button>
-    <button data-s="curempty">19. Валюта без бонусов</button>
-    <button data-s="many">20. Много бонусов</button>
-    <button data-s="terms">21. Условия: все поля</button>
-    <button data-s="termsmin">22. Условия: минимум полей</button>
-    <button data-s="cancel">23. Отмена</button>
+    <button data-s="expired">2. Бонус истёк, следующий начался</button>
+    <button data-s="soon">3. Последний день отыгрыша</button>
+    <button data-s="zero">4. На балансе $0</button>
+    <button data-s="regdone">5. После регистрации с бонусом</button>
+    <button data-s="noact">6. Новый игрок</button>
+    <button data-s="lvbronze">7. Игрок Bronze</button>
+    <button data-s="lvgold">8. Игрок Gold</button>
+    <button data-s="lvdiamond">9. Игрок Emerald</button>
+    <button data-s="guest">10. Гость</button>
+    <button data-s="longq">11. 12 бонусов в очереди</button>
+    <button data-s="profile">12. Профиль: активный бонус</button>
+    <button data-s="profilenone">13. Профиль: бонуса нет</button>
+    <button data-s="promo">14. Промокод: поле</button>
+    <button data-s="promoerr">15. Промокод: не действует</button>
+    <button data-s="promoexp">16. Промокод: истёк (тот же текст)</button>
+    <button data-s="promook">17. Промокод: активирован, бонус в списке</button>
+    <button data-s="promoinst">18. Промокод: активирован, бонус в очереди</button>
+    <button data-s="cryptolong">19. Крипта: самая длинная сумма ($1 в BTC)</button>
+    <button data-s="curempty">20. Валюта без бонусов</button>
+    <button data-s="many">21. Много бонусов</button>
+    <button data-s="terms">22. Условия: все поля</button>
+    <button data-s="termsmin">23. Условия: минимум полей</button>
+    <button data-s="cancel">24. Отмена</button>
     <small>Касса</small>
-    <button data-s="cash">24. Есть активный</button>
-    <button data-s="cashpick">25. Пришёл по «Получить»</button>
-    <button data-s="cashmin">26. Суммы не хватает на бонус</button>
-    <button data-s="cashnone">27. Бонусов нет</button>
+    <button data-s="cash">25. Есть активный</button>
+    <button data-s="cashpick">26. Пришёл по «Получить»</button>
+    <button data-s="cashmin">27. Суммы не хватает на бонус</button>
+    <button data-s="cashnone">28. Бонусов нет</button>
     <small>Регистрация</small>
-    <button data-s="reg">28. Выбор бонуса</button>
+    <button data-s="reg">29. Выбор бонуса</button>
     <small>История и уведомления</small>
-    <button data-s="hist">29. История</button>
-    <button data-s="histempty">30. История пустая</button>
-    <button data-s="ntf">31. Уведомления</button>
+    <button data-s="hist">30. История</button>
+    <button data-s="histempty">31. История пустая</button>
+    <button data-s="ntf">32. Уведомления</button>
     <small>Система</small>
-    <button data-s="core">32. Ядро бонуса</button>
+    <button data-s="core">33. Ядро бонуса</button>
   </nav>
   <div class="stage"><div class="frame" id="frame" data-w="1440"></div></div>
 </div>
@@ -1682,10 +1691,10 @@ function sortBonuses(keys){
 /* Один кегль суммы на весь ряд: берём самый длинный */
 const zRow=list=>Math.max(1,...list.map(b=>zOf(amtH(b))));
 /* «Показать ещё» после двух рядов: число карточек зависит от колонок на этой ширине */
-const PER={390:4,820:4,1440:6,1920:10,2560:12};
+const PER={390:2,820:4,1440:6,1920:10,2560:12};
 function cardCur(b,o){const keep=CUR;if(PF==="all"&&!forCur(b,PC()))CUR=b.curs[0];const h=card(b,o);CUR=keep;return h}
 function grid(list,o={}){
-  const n=PER[document.getElementById("frame").dataset.w]||6, cut=o.cut&&list.length>n;
+  const n=PER[document.getElementById("frame").dataset.w]||6, cut=o.cut!==0&&list.length>n;
   return `<div class="grid ${cut?"cut":""}" data-z="1">${list.map((b,i)=>cardCur(b,o).replace('<div class="cw ',`<div class="cw ${cut&&i>=n?"hid ":""}`)).join("")}</div>
   ${cut?`${moreBtn("const g=this.parentElement.previousElementSibling;g.classList.toggle('cut');this.textContent=g.classList.contains('cut')?'Показать ещё':'Свернуть';fitAll()")}`:""}`;
 }
@@ -1693,8 +1702,8 @@ const GLYPH={USD:"$",EUR:"€",RUB:"₽",USDT:"₮",BTC:"₿"};
 const curSw=keys=>{const my=WALLETS?WALLETS[1]||WALLETS[0]:PC(), all=PF==="all";
   return `<span class="segm curf2" role="tablist" aria-label="Валюта бонусов" data-f="Валюта кошелька игрока или все"><button role="tab" aria-selected="${!all}" class="${all?"":"on"}" onclick="PF=${WALLETS?`'${my}'`:"null"};draw()">Мой кошелёк <span class="c">${code(my)}</span></button><button role="tab" aria-selected="${all}" class="${all?"on":""}" onclick="PF='all';draw()">Все валюты</button></span>`};
 function catalog(keys,o={}){
-  const all=[...(ST.extra||[]).map(k=>B[k]),...sortBonuses(keys)], open=all.filter(b=>!b.lvl||(!o.guest&&fits(b))), club=all.filter(b=>b.lvl&&(o.guest||!fits(b))).sort((a,b)=>a.lvl[0][0]-b.lvl[0][0]);
-  const wel=PF==="all"||forCur(B.w1,curNow());
+  const all=[...(ST.extra||[]).map(k=>B[k]),...sortBonuses(keys)], open=all.filter(b=>!b.lvl||(!o.guest&&fits(b))), club=[]; /* 20.11: бонусы чужого уровня не показываем никому (сегментация) */
+  const wel=(PF==="all"||forCur(B.w1,curNow()))&&welLeft().length>0;
   const none=!all.length&&!wel;
   const sw=o.guest?"":curSw(keys), hd=(t,first)=>`<div class="sech ${first&&sw?"has":""}"><h2>${t}</h2>${first?sw:""}</div>`;
   return `${wel?welcome(o,hd("Приветственный пакет",1)):""}${open.length+club.length?`${hd("Бонусы к депозиту",!wel)}${grid([...open,...club],o)}`:""}
@@ -1710,8 +1719,10 @@ function stepState(k,i){
   if(s==="next") return ["hot",undefined,0];
   return ["dim",`<span class="stp">После ${i}-го депозита</span>`,1];
 }
-const welcome=(o={},head)=>{const ks=["w1","w2","w3"];return `${head||`<div class="sech"><h2>Приветственный пакет</h2></div>`}
-  <div class="grid" data-z="1">${ks.map((k,i)=>{const [cls,act,view]=stepState(k,i);return card(B[k],{cls,act,view,guest:o.guest})}).join("")}</div>`};
+/* Пакет: только шаги, которые ещё не взяты. Взятый шаг живёт в активном бонусе, в «Следующих» и в истории */
+const welLeft=()=>["w1","w2","w3"].map((k,i)=>[k,i]).filter(([k,i])=>!(ST.act===k||ST.queue.includes(k)||ST.gone.includes(k)||ST.wel[i]==="done"));
+const welcome=(o={},head)=>{const ks=welLeft();return `${head||`<div class="sech"><h2>Приветственный пакет</h2></div>`}
+  <div class="grid" data-z="1">${ks.map(([k,i])=>{const [cls,act,view]=stepState(k,i);return card(B[k],{cls,act,view,guest:o.guest})}).join("")}</div>`};
 
 /* ── Бонусы игрока. Отмена реально убирает бонус, следующий встаёт на место ── */
 const PB0={w1:{amt:100,done:840,need:2000,dl:"25 ноября"},fri:{amt:40,done:0,need:600,dl:"24 ноября"},ten:{amt:10,done:0,need:30,dl:null},reg:{amt:50,done:0,need:100,dl:null}};
@@ -1733,8 +1744,8 @@ const table=()=>{if(!ST.act)return"";const k=ST.act,a=PB[k],p=Math.min(100,Math.
 /* «Показать ещё / Свернуть»: один компонент для сетки купонов и для «Следующих» */
 const moreBtn=js=>`<div class="more"><button class="btn s more-b" onclick="${js}">Показать ещё</button></div>`;
 const nxRow=k=>`<div class="nx">${art(B[k])||"<span></span>"}<div><b data-fit data-f="Сумма бонуса">${mh(PB[k].amt)}</b><small>${B[k].name}</small>${PB[k].dl?`<small class="dt" data-f="Дата окончания срока">до ${PB[k].dl}</small>`:""}</div>${actions(k,"view")}</div>`;
-let TOAST="";
-const toast=()=>`<div class="toast" role="status" id="toast"><span class="ok">${I.ok}</span><span>${TOAST}</span><button class="ib" aria-label="Закрыть" onclick="this.parentElement.remove()">${I.x}</button></div>`;
+let TOAST="",TICON="ok";
+const toast=()=>`<div class="toast" role="status" id="toast"><span class="${TICON}">${TICON==="ok"?I.ok:I.info}</span><span>${TOAST}</span><button class="ib" aria-label="Закрыть" onclick="this.parentElement.remove()">${I.x}</button></div>`;
 
 const NT=[["b","g",I.ok,"Бонус отыгран","Пятничный бонус",40,"g","+","18.11, 14:20"],["b","",I.gift,"Начался отыгрыш","Плюс 10% к депозиту",10,"","","18.11, 14:20"],["b","",I.clock,"Отыграть до 20 ноября, 18:00","Приветственный: 1-й депозит",100,"","","17.11, 18:00"],["b","",I.clock,"Бонус истёк","Бонус на слоты",15,"z","","15.11, 23:59"],["b","",I.gift,"Начался отыгрыш","Приветственный: 1-й депозит",100,"","","10.11, 09:05"]];
 let NF="b";
@@ -1932,12 +1943,15 @@ function doCancel(k){
   const open=!document.querySelector("#frame .nxt.cut"); ST.gone.push(k); ST.soon=false; closeDlg(); draw();
   if(open&&document.querySelector("#frame .nxt.cut")) document.querySelector("#frame .nxp .more-b")?.click();
   (document.querySelector("#frame .nx .btn")||document.querySelector("#frame .tb-act .btn"))?.focus({preventScroll:true});
-  TOAST=wasAct&&ST.act?`Бонус отменён. Теперь отыгрывается: ${B[ST.act].name}`:"Бонус отменён";
-  document.querySelectorAll("#toast").forEach(t=>t.remove());
+  showToast(wasAct&&ST.act?`Бонус отменён. Теперь отыгрывается: ${B[ST.act].name}`:"Бонус отменён");
+}
+/* Тост внизу (телефон: сверху). Одинаковый для отмены и истечения */
+function showToast(msg,ms=4000,ic="ok"){
+  TOAST=msg; TICON=ic; document.querySelectorAll("#toast").forEach(t=>t.remove());
   document.body.insertAdjacentHTML("beforeend",toast());
   const t=document.getElementById("toast"), fr=document.getElementById("frame"), r=fr.getBoundingClientRect(); t.style.left=(r.left+r.width/2)+"px";
   if(fr.classList.contains("f390")) t.classList.add("top");
-  clearTimeout(window.__t); window.__t=setTimeout(()=>document.getElementById("toast")?.remove(),4000);
+  clearTimeout(window.__t); window.__t=setTimeout(()=>document.getElementById("toast")?.remove(),ms);
 }
 function closeDlg(){const d=document.getElementById("dlg"); if(d&&d.style.display==="flex"){d.style.display="none";window.__opener?.focus?.({preventScroll:true})}}
 function toggleNtf(){const n=document.getElementById("ntf"); if(n){closeNtf();return}
@@ -1970,8 +1984,7 @@ function openProfile(){
       <div class="pf-lv">${I.crown||""}<span>Silver</span><em>38 % до Gold</em></div><div class="bar"><i style="width:38%"></i></div></div>
     <div class="pf-t">${tiles.map(([i,t,f])=>`<button class="dcard" onclick="closeDlg();${f}">${IC[i]}<span>${t}</span></button>`).join("")}</div>
     ${a?`<button class="dcard pf-b" data-f="Активный бонус игрока" onclick="closeDlg();go('main')"><span class="eyebrow">Активный бонус</span>
-      <div class="r">${art(B[k])}<div class="tx"><b data-fit>${mh(a.amt)}</b><span>${B[k].name}</span></div><em>${p}${NB}%</em></div>
-      <div class="bar"><i style="width:${Math.max(p,1)}%"></i></div><span class="nm">Отыграно ${m(a.done)} из ${m(a.need)}</span></button>`
+      <div class="r">${ring(B[k],p)}<div class="tx"><b data-fit>${mh(a.amt)}</b><span>${B[k].name}</span><span class="nm">Отыграно ${m(a.done)} <span class="nw">из ${m(a.need)}</span></span></div></div></button>`
      :""}
     <div class="dcard pf-m"><button onclick="openPromoDlg()" data-f="Промокод: тот же блок, что на странице и в кассе"><svg class="i l" viewBox="0 0 24 24"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4z"/><path d="M14 7v2M14 11v2M14 15v2" stroke-dasharray="1 0"/></svg>Промокод</button><button>${I.bell}Уведомления<i>1</i></button><button>${'<svg class="i l" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>'}Настройки</button><button><svg class="i l" viewBox="0 0 24 24"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>Поддержка</button></div>
     <button class="dcard pf-x" onclick="closeDlg()">Выйти</button></div>`,".pf-b");
@@ -1996,6 +2009,7 @@ const coreSheet=()=>{CASH={A:50,sel:"fri",keys:["fri"],crypto:false};
 const W1=["wait","next","wait"], W0=["next","wait","wait"], WD=["done","next","wait"];
 const S={
   main:{st:{act:"w1",queue:["fri","ten"],wel:W1},r:()=>page()},
+  expired:{st:{act:"fri",queue:["ten"],wel:W1,gone:["w1"]},r:()=>{setTimeout(()=>showToast("Срок бонуса «Приветственный: 1-й депозит» закончился. Теперь отыгрывается: Пятничный бонус",8000,"inf"),0);return page()}},
   soon:{st:{act:"w1",queue:[],wel:W1,soon:true},r:()=>page()},
   zero:{st:{act:"fri",queue:[],wel:WD,zero:true},r:()=>page()},
   regdone:{st:{act:"reg",queue:[],wel:W0,zero:true},r:()=>page()},
