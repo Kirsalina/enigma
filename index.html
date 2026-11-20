@@ -1453,6 +1453,34 @@ button.ava{border:0;cursor:pointer;font:inherit;font-weight:700}
 .ht{background:radial-gradient(120px 90px at 50% 55%,rgba(163,132,217,.22),transparent 70%),var(--grad)!important}
 /* 18:10: в «Как работает бонус» снова картинки (как было до 15:30) */
 .ht:has(img){background:radial-gradient(120px 90px at 50% 55%,rgba(163,132,217,.26),transparent 70%),var(--grad)!important}
+/* 20:19 Промокод в меню профиля (над «Уведомлениями»): выпадашка, блок промокода в виде для узкой ширины */
+.pdlg .pd-h{display:grid;gap:4px;padding:16px}
+.pdlg .pd-h b{font-size:16px;line-height:22px;color:var(--title)}
+.pdlg .pd-h span{font-size:13px;line-height:18px;color:var(--muted)}
+.pdlg .pw{--nx:80px!important}
+.pdlg .pw>.promo2{grid-template-columns:80px minmax(0,1fr)!important}
+.pdlg .pw .pstub .art{width:64px!important;height:64px!important}
+.pdlg .pw .promo2 .pbody{padding:16px!important}
+.pdlg .pw .promo2 .pr{flex-wrap:wrap!important}
+.pdlg .pw .promo2 .pr .pin,.pdlg .pw .promo2 .pr .btn,.pdlg .pw .promo2 .pr .pok{flex:1 1 100%!important}
+/* промокод в выпадашке: без билета, поле и кнопка внутри карточки, те же состояния */
+.pdlg .pd-h{gap:4px}
+.pw-d{margin-top:12px}
+.pw-d .promo2{display:block!important;background:none!important;-webkit-mask:none!important;mask:none!important;box-shadow:none!important;padding:0!important;grid-template-columns:none!important}
+.pw-d .pbody{padding:0!important;display:block!important}
+.pw-d .pr{display:flex;flex-wrap:wrap;gap:8px}
+.pw-d .pin{position:relative;flex:1 1 100%;display:flex;min-width:0}
+.pw-d .pin input{flex:1 1 auto;min-width:0;height:44px}
+.pw-d.err .pin input{padding-right:120px}
+.pw-d .promo2 .pm{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:13px;line-height:16px;pointer-events:none;white-space:nowrap}
+.pw-d .promo2 .pm:empty{display:none}
+.pw-d .pr .btn,.pw-d .pr .pok{flex:1 1 100%;height:44px}
+.pw-d .pok{display:inline-flex!important;align-items:center;justify-content:center;gap:8px;border-radius:8px;background:rgba(78,201,138,.12)!important;color:var(--green);font-size:14px;font-weight:500}
+.pw-d .pok svg{width:16px;height:16px}
+.pdlg .dlg-ft{display:flex;gap:8px}.pdlg .dlg-ft .btn{flex:1 1 0}
+.pdlg .pw-d .pok{color:var(--green)!important;font-size:14px!important}.pdlg .pd-h>span{font-size:13px}
+/* плитка всегда заполняет обёртку, иначе снизу видна полоса цвета обводки */
+.tw2{display:flex!important;flex-direction:column}.tw2>.tile{flex:1 1 auto;width:100%}
 </style>
 </head>
 <body>
@@ -1628,8 +1656,8 @@ function card(b,o={}){
 let PROMO={v:"",st:""};
 const PROMO_MSG={bad:"Не действует",exp:"Не действует",used:"Не действует",lvl:"Не действует",cur:"Не действует",ok:"Активирован",inst:"Активирован"};
 const promoBox=(where="page")=>{const ok=PROMO.st==="ok"||PROMO.st==="inst",err=PROMO.st&&!ok;
-  return `<div class="pw ${err?"err":""} ${ok?"good":""} ${where}"><div class="promo2 ${err?"err":""} ${ok?"good":""} ${where}" data-f="Промокод (новое поле админки: код → шаблон бонуса)">
-  <div class="pstub" data-f="Картинка: promo-code.png (ждём)">${ASSET.promocode?`<img class="art" src="${ASSET.promocode}" alt="">`:""}</div>
+  return `<div class="${where==="dlg"?"pw-d":"pw"} ${err?"err":""} ${ok?"good":""} ${where}"><div class="promo2 ${err?"err":""} ${ok?"good":""} ${where}" data-f="Промокод (новое поле админки: код → шаблон бонуса)">
+  ${where==="dlg"?"":`<div class="pstub">${ASSET.promocode?`<img class="art" src="${ASSET.promocode}" alt="">`:""}</div>`}
   <div class="pbody">
     <div class="pr"><div class="pin"><input id="pc-${where}" aria-label="Промокод" placeholder="Введите промокод" value="${PROMO.v}" autocomplete="off" spellcheck="false" ${ok?"readonly":""} oninput="PROMO.v=this.value.toUpperCase();this.value=PROMO.v;if(PROMO.st){PROMO.st='';const p=this.closest('.promo2');p.classList.remove('err','good');p.parentElement.classList.remove('err','good');p.querySelector('.pm').textContent=''}" onkeydown="if(event.key==='Enter')applyPromo('${where}')"><span class="pm" role="status">${err?PROMO_MSG[PROMO.st]:""}</span></div>
     ${ok?`<span class="pok" role="status">${I.tick}${PROMO_MSG[PROMO.st]}</span>`:`<button class="btn p" onclick="applyPromo('${where}')">Активировать</button>`}</div></div></div></div>`};
@@ -1639,7 +1667,7 @@ function applyPromo(where){const c=(PROMO.v||"").trim();if(!c)return;
   else if(c==="FREE10"){PROMO.st="inst";if(!ST.act)ST.act="promo10";else if(!ST.queue.includes("promo10"))ST.queue.push("promo10")}
   else PROMO.st=map[c]||"bad";
   const el0=document.getElementById("pc-"+where), y0=el0?el0.getBoundingClientRect().top:0;
-  draw();
+  draw(); if(where==="dlg"){openPromoDlg();return}
   const el1=document.getElementById("pc-"+where); if(el1){const d=el1.getBoundingClientRect().top-y0;if(d){let p=el1.parentElement;while(p&&p!==document.body){if(p.scrollHeight>p.clientHeight+1&&/(auto|scroll)/.test(getComputedStyle(p).overflowY)){p.scrollTop+=d;break}p=p.parentElement}window.scrollBy(0,el1.getBoundingClientRect().top-y0)}}setTimeout(()=>document.getElementById("pc-"+where)?.focus({preventScroll:true}),0)}
 /* Валюта страницы бонусов: кошельки игрока + «Все валюты». Нет поля валют: бонус для всех */
 let PF=null, WALLETS=null;
@@ -1926,6 +1954,13 @@ function openSections(tab,guest){
   showDlg(`<div class="dlg secs" role="dialog" aria-modal="true" aria-label="Разделы"><div class="sl dcard"><span class="eyebrow">Награды</span>${TABS.filter(([n])=>!(guest&&n==="История")).map(([n,ic])=>`<button class="${n===tab?"on":""}" onclick="closeDlg();${n==="История"?"go('hist')":n==="Бонусы"?"go('main')":""}">${ic}<span>${n}</span>${n===tab?I.tick:""}</button>`).join("")}</div></div>`,".sl .on");
 }
 /* Меню профиля как на сайте + карточка активного бонуса (предложение Алины 19.11) */
+/* Промокод из меню профиля: выпадашка с тем же блоком промокода */
+function openPromoDlg(){
+  const ok=PROMO.st==="ok"||PROMO.st==="inst";
+  showDlg(`<div class="dlg prof pdlg" role="dialog" aria-modal="true" aria-label="Промокод">
+    <div class="dcard pd-h"><b>Промокод</b><span>Введите бонусный код: бонус появится первым в списке или сразу встанет в очередь</span>${promoBox("dlg")}</div>
+    <div class="dlg-ft">${ok?`<button class="btn s" onclick="closeDlg()">Закрыть</button><button class="btn p" onclick="closeDlg();go('main')">К бонусам</button>`:`<button class="btn s" onclick="closeDlg()">Закрыть</button>`}</div></div>`,"#pc-dlg");
+}
 function openProfile(){
   const k=ST.act,a=k&&PB[k],p=a?Math.min(100,Math.round(a.done/a.need*100)):0;
   const tiles=[["gift","Бонусы","go('main')"],["chat","Чат",""],["heart","Донат",""],["wallet","Касса","go('cash')"]];
@@ -1938,7 +1973,7 @@ function openProfile(){
       <div class="r">${art(B[k])}<div class="tx"><b data-fit>${mh(a.amt)}</b><span>${B[k].name}</span></div><em>${p}${NB}%</em></div>
       <div class="bar"><i style="width:${Math.max(p,1)}%"></i></div><span class="nm">Отыграно ${m(a.done)} из ${m(a.need)}</span></button>`
      :""}
-    <div class="dcard pf-m"><button>${I.bell}Уведомления<i>1</i></button><button>${'<svg class="i l" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>'}Настройки</button><button><svg class="i l" viewBox="0 0 24 24"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>Поддержка</button></div>
+    <div class="dcard pf-m"><button onclick="openPromoDlg()" data-f="Промокод: тот же блок, что на странице и в кассе"><svg class="i l" viewBox="0 0 24 24"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4z"/><path d="M14 7v2M14 11v2M14 15v2" stroke-dasharray="1 0"/></svg>Промокод</button><button>${I.bell}Уведомления<i>1</i></button><button>${'<svg class="i l" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>'}Настройки</button><button><svg class="i l" viewBox="0 0 24 24"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>Поддержка</button></div>
     <button class="dcard pf-x" onclick="closeDlg()">Выйти</button></div>`,".pf-b");
 }
 /* «Получить» ведёт в кассу той валюты, в которой игрок смотрит бонусы (крипто-кошелёк → крипто-касса) */
@@ -1971,8 +2006,8 @@ const S={
   lvgold:{lvl:4,st:{act:null,queue:[],wel:WD},r:()=>page()},
   cryptolong:{cur:"BTC",st:{act:"w1",queue:["one","fri"],wel:W1},r:()=>page()},
   longq:{st:{act:"w1",queue:["fri","ten","slots","wk","mn","rl","noart","long","w2","w3","mid","gold"],wel:W1},r:()=>page()},
-  profile:{st:{act:"w1",queue:["fri","ten"],wel:W1},r:()=>{setTimeout(openProfile,0);return page()}},
-  profilenone:{st:{act:null,queue:[],wel:WD},r:()=>{setTimeout(openProfile,0);return page()}},
+  profile:{st:{act:"w1",queue:["fri","ten"],wel:W1},r:(arg,re)=>{if(!document.querySelector("#dlg .pdlg"))setTimeout(openProfile,0);return page()}},
+  profilenone:{st:{act:null,queue:[],wel:WD},r:(arg,re)=>{if(!document.querySelector("#dlg .pdlg"))setTimeout(openProfile,0);return page()}},
   promo:{st:{act:"w1",queue:["fri"],wel:W1},r:()=>page()},
   promoerr:{pv:"SUMMER",ps:"bad",st:{act:"w1",queue:["fri"],wel:W1},r:()=>page()},
   promoexp:{pv:"OLD",ps:"exp",st:{act:"w1",queue:["fri"],wel:W1},r:()=>page()},
