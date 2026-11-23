@@ -1721,7 +1721,7 @@ const TOP=LEVELS.length-1, ME={level:3}, TO={3:[2100,72],4:[12400,38],8:[486000,
 /* Шаблоны бонусов: только поля админки и ТЗ. Суммы в USD, валюта примера пересчитывает их для показа */
 const B={
   w1:{curs:["USD","RUB","USDT","BTC"],name:"Приветственный: 1-й депозит",type:"pct",val:100,cap:200,min:10,mult:20,days:7,art:"chest",depNo:1},
-  w2:{curs:["USD","RUB","USDT","BTC"],name:"Приветственный: 2-й депозит",type:"pct",val:50,cap:150,min:20,mult:15,days:7,art:"chest",until:"31 декабря",depNo:2,limit:1,cats:[["Слоты",100],["Dice",90],["Live dealer",10]],others:0,maxBet:5,maxWin:5000,desc:"Бонус ко второму депозиту."},
+  w2:{curs:["USD","RUB","USDT","BTC"],name:"Приветственный: 2-й депозит",type:"pct",val:50,cap:150,min:20,mult:15,days:7,art:"chest",until:"31 декабря",depNo:2,limit:1,cats:[["Слоты",100],["Dice",90],["Live dealer",10]],others:0,maxBet:5,maxWin:5000},
   w3:{curs:["USD","RUB","USDT","BTC"],name:"Приветственный: 3-й депозит",type:"pct",val:25,cap:100,min:20,mult:10,days:7,art:"chest",until:"31 декабря",depNo:3},
   fri:{curs:["USD","RUB","USDT","BTC"],name:"Пятничный бонус",type:"fix",val:40,min:30,mult:15,days:7,art:"trophy",until:"22 ноября",limit:3,got:1},
   ten:{curs:["USD","USDT","BTC"],name:"Плюс 10% к депозиту",type:"pct",val:10,cap:100,min:10,mult:3,days:0,art:"chest",until:"7 декабря"},
@@ -2064,9 +2064,9 @@ function termGroups(b,own){
   g.push(["Как отыграть",w.join("")]);
   if(b.mult){const cats=b.cats?[...b.cats,["Остальные игры",b.others?100:0]]:[["Все игры",100]];
     g.push(["Какие ставки идут в отыгрыш",`<div class="gh"><span>Игра</span><span>Идёт в отыгрыш</span></div>`+cats.map(([n,p])=>`<div class="gm" data-f="Зачёт по категориям (новое)"><div class="l"><span>${n}</span><b class="${p?"":"z"}">${p?p+NB+"%":"не идут"}</b></div>${p?`<div class="bar"><i style="width:${p}%"></i></div>`:""}</div>`).join("")]);}
-  const pay=[]; if(b.maxBet) pay.push(kv("Засчитывается со ставки","до "+m(b.maxBet),"Макс. ставка (новое): ставка больше засчитывается как эта сумма"));
-  if(b.maxWin) pay.push(kv("Вывод с бонуса","до "+m(b.maxWin),"Макс. выигрыш (новое): максимум к выводу с бонуса"));
-  if(pay.length) g.push(["Ставка и вывод",pay.join("")]);
+  const pay=[]; if(b.maxBet) pay.push(kv("Максимальная ставка",m(b.maxBet),"Макс. ставка (новое)"));
+  if(b.maxWin) pay.push(kv("Максимальный выигрыш",m(b.maxWin),"Макс. выигрыш (новое)"));
+  if(pay.length) g.push(["Ставка и выигрыш",pay.join("")]);
   return g.map(([t,h])=>`<div class="grp"><span class="eyebrow">${t}</span><div class="box">${h}</div></div>`).join("");
 }
 /* Дровер как на сайте (панель «Бонусы» у колокольчика): справа сверху, заголовок отдельной плашкой, ниже содержимое. На телефоне снизу */
@@ -2098,7 +2098,7 @@ function openTerms(k,ctx){
     :!take?close:close+`<button class="btn p" onclick="closeDlg();${ctx==="guest"?(k==="reg"?"go('reg','reg')":"go('reg')"):`getBonus('${k}')`}">Получить</button>`;
   showDlg(`<div class="dlg terms" role="dialog" aria-modal="true" aria-labelledby="dt"><div class="scroll">
     <div class="dcard thc">${art(b)}<div class="tx"><h3 id="dt" data-f="Название">${b.name}</h3><div class="am">${own?`<b data-fit data-f="Сумма бонуса игрока">${mh(PB[k].amt)}</b>`:`<b data-fit>${amtH(b)}</b>${cap(b)?`<span>${cap(b)}</span>`:""}`}</div></div></div>
-    <div class="dlg-bd">${termGroups(b,ctx==="view"&&(ST.act===k||ST.queue.includes(k))?PB[k]:null)}${b.desc?`<div class="dcard tnote"><p class="desc2" data-f="Описание (поле админки)">${b.desc}</p></div>`:""}${take?`<p class="foot" data-f="Системная строка, не поле бонуса">Получая бонус, вы принимаете условия акции и Условия использования сайта, в том числе правила начисления, отыгрыша, ограничений и отмены бонусов.</p>`:""}</div></div>
+    <div class="dlg-bd">${termGroups(b,ctx==="view"&&(ST.act===k||ST.queue.includes(k))?PB[k]:null)}${take?`<p class="foot" data-f="Описание (поле админки), по умолчанию этот текст">Получая бонус, вы принимаете условия акции и Условия использования сайта, в том числе правила начисления, отыгрыша, ограничений и отмены бонусов.</p>`:""}</div></div>
     <div class="dlg-ft" ${take?"":`style="grid-template-columns:1fr"`}>${foot}</div></div>`,".dlg-ft .btn.s");
 }
 /* Отмена: строки последствий, как группа в условиях. Без «сгорит» и без красной суммы */
@@ -2173,7 +2173,7 @@ const coreSheet=()=>{CASH={A:50,sel:"fri",keys:["fri"],crypto:false};
     <div class="tiles" style="grid-template-columns:1fr">${tile("fri")}</div>
     <div class="panel" style="padding:0 var(--pad)">${nxRow("fri")}</div>
     ${hist()}</div></div></div>
-  <div><h5>Где игрок видит каждое поле админки</h5><div class="tw"><table><tr><th>Поле в админке</th><th>Где видно</th></tr><tr><td>Картинка (обязательна)</td><td>Купон, плитка в кассе, активный бонус, «Следующие»</td></tr><tr><td>Сумма или %, лимит</td><td>Везде: купон, плитка, активный бонус, «Следующие», история, уведомления</td></tr><tr><td>Название</td><td>Везде</td></tr><tr><td>Мин. депозит</td><td>Купон (строка «Депозит»). В кассе только если суммы не хватает</td></tr><tr><td>Вейджер</td><td>Купон, плитка в кассе</td></tr><tr><td>Промокод / уровни / номер депозита / дата окончания</td><td>Чип в углу купона (что-то одно, по порядку: промокод, уровень, номер депозита, дата)</td></tr><tr><td>Срок отыгрыша</td><td>Активный бонус и «Следующие» как дата («до 25 ноября»)</td></tr><tr><td>Категории игр, макс. ставка (засчитывается как лимит), макс. выигрыш (вывод с бонуса), лимит на игрока, описание</td><td>Только в окне условий (кнопка i)</td></tr></table></div></div>
+  <div><h5>Где игрок видит каждое поле админки</h5><div class="tw"><table><tr><th>Поле в админке</th><th>Где видно</th></tr><tr><td>Картинка (обязательна)</td><td>Купон, плитка в кассе, активный бонус, «Следующие»</td></tr><tr><td>Сумма или %, лимит</td><td>Везде: купон, плитка, активный бонус, «Следующие», история, уведомления</td></tr><tr><td>Название</td><td>Везде</td></tr><tr><td>Мин. депозит</td><td>Купон (строка «Депозит»). В кассе только если суммы не хватает</td></tr><tr><td>Вейджер</td><td>Купон, плитка в кассе</td></tr><tr><td>Промокод / уровни / номер депозита / дата окончания</td><td>Чип в углу купона (что-то одно, по порядку: промокод, уровень, номер депозита, дата)</td></tr><tr><td>Срок отыгрыша</td><td>Активный бонус и «Следующие» как дата («до 25 ноября»)</td></tr><tr><td>Категории игр, макс. ставка, макс. выигрыш, лимит на игрока, описание</td><td>Только в окне условий (кнопка i)</td></tr></table></div></div>
   <div><h5>Все варианты купона</h5>${grid(["w2","ten","gold","promo","nowag","long"].map(k=>B[k]))}</div>
   <div><h5>После MVP: фриспины и пакет. Те же слоты</h5>${grid([B.fs,B.pack])}</div>
 </div>`,{faq:false})};
