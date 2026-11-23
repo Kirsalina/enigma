@@ -1599,6 +1599,9 @@ button.ava{border:0;cursor:pointer;font:inherit;font-weight:700}
 .btn.s:not(:hover),.stub:not(.tile .stub):not(.cst>.stub){background:var(--fill)!important}
 .check i{box-shadow:inset 0 0 0 1.5px rgba(150,144,171,.45)!important}
 .rhero+.psec{margin-top:40px!important}
+/* 23.11 17:47: кнопки и карточки выпадашек непрозрачные, как на сайте (фикс аудита: общая заливка кнопок их перекрыла) */
+.drw .dlg-ft .btn.s,.drw .dlg-ft .btn.s:not(:hover),.drw button.dcard,.drw .dcard{background:#1B1922!important}
+@media (hover:hover){.drw .dlg-ft .btn.s:hover,.drw button.dcard:hover{background:#221F2B!important}}
 </style>
 </head>
 <body>
@@ -1784,7 +1787,9 @@ function applyPromo(where){const c=(PROMO.v||"").trim();if(!c)return;
 let PF=null, WALLETS=null;
 const code=c=>c;
 const forCur=(b,c)=>!b.curs||b.curs.includes(code(c));
-const curNow=()=>PF==="all"?PC():(PF||PC());
+/* Валюта показа сумм = валюта кошелька игрока, в обоих режимах переключателя. Переключатель только прячет/показывает бонусы */
+const walletCur=()=>WALLETS?(WALLETS[1]||WALLETS[0]):PC();
+const curNow=()=>walletCur();
 function sortBonuses(keys){
   const due=b=>b.until?Date.parse("2026 "+b.until.replace("декабря","Dec").replace("ноября","Nov"))||9e15:9e15;
   /* Бонус для уровней ниже игрока не показываем: взять его уже нельзя */
@@ -1794,7 +1799,7 @@ function sortBonuses(keys){
 const zRow=list=>Math.max(1,...list.map(b=>zOf(amtH(b))));
 /* «Показать ещё» после двух рядов: число карточек зависит от колонок на этой ширине */
 const PER={390:2,820:4,1440:6,1920:10,2560:12};
-function cardCur(b,o){const keep=CUR;if(PF==="all"&&!forCur(b,PC()))CUR=b.curs[0];const h=card(b,o);CUR=keep;return h}
+function cardCur(b,o){const keep=CUR;if(!forCur(b,walletCur()))CUR=b.curs[0];const h=card(b,o);CUR=keep;return h}
 function grid(list,o={}){
   const n=PER[document.getElementById("frame").dataset.w]||6, cut=o.cut!==0&&list.length>n+1; /* один купон не прячем */
   return `<div class="grid ${cut?"cut":""}" data-z="1">${list.map((b,i)=>cardCur(b,o).replace('<div class="cw ',`<div class="cw ${cut&&i>=n?"hid ":""}`)).join("")}</div>
@@ -1805,7 +1810,7 @@ const curSw=keys=>{const my=WALLETS?WALLETS[1]||WALLETS[0]:PC(), all=PF==="all";
   return `<span class="segm curf2" role="tablist" aria-label="Валюта бонусов" data-f="Валюта кошелька игрока или все"><button role="tab" aria-selected="${!all}" class="${all?"":"on"}" onclick="PF=${WALLETS?`'${my}'`:"null"};draw()">Мой кошелёк <span class="c">${code(my)}</span></button><button role="tab" aria-selected="${all}" class="${all?"on":""}" onclick="PF='all';draw()">Все валюты</button></span>`};
 function catalog(keys,o={}){
   const all=[...(ST.extra||[]).map(k=>B[k]),...sortBonuses(keys)], open=all.filter(b=>!b.lvl||(!o.guest&&fits(b))), club=[]; /* 20.11: бонусы чужого уровня не показываем никому (сегментация) */
-  const wel=forCur(B.w1,PC())&&welLeft().length>0; /* пакет не зависит от переключателя: ничего не прыгает */
+  const wel=forCur(B.w1,walletCur())&&welLeft().length>0; /* пакет не зависит от переключателя: ничего не прыгает */
   const none=!all.length&&!wel;
   const sw=o.guest?"":curSw(keys);
   /* Переключатель валют относится к «Бонусам к депозиту» (у пакета его нет): справа от заголовка, под заголовком пояснение */
@@ -1873,16 +1878,16 @@ const site=(inner,o={})=>{const tab=o.tab||"Бонусы";return `${header(o)}
   ${o.ntf?ntf():""}${dlgBg}`};
 /* Вопросы и ответы: тексты живого сайта */
 /* «Как работает бонус»: компонент живого сайта, 4 шага. Ниже вопросы */
-const HOW=[["step1","Выбираете","Пакет, бонус к депозиту или код из рассылки: выбирайте свой. Передумали? Поменять можно до самого депозита"],["step2","Пополняете","Пополнили, и бонус сразу на бонусном балансе. Ничего ждать и подтверждать не нужно"],["step3","Отыгрываете","Играйте в игры из условий: каждая ставка заполняет кольцо прогресса. Всегда видно, сколько осталось"],["step4","Получаете","Кольцо заполнено, и бонус становится реальными деньгами на основном балансе. Выводите или играйте дальше"]];
+const HOW=[["step1","Выбираете","Любой бонус здесь или в кассе"],["step2","Пополняете","Бонус зачисляется вместе с депозитом"],["step3","Отыгрываете","Играйте, и прогресс растёт с каждой ставкой"],["step4","Получаете","Бонус становится реальными деньгами"]];
 const FAQ=()=>[["Что такое вейджер?",`Сколько нужно поставить, чтобы бонус стал обычными деньгами. Считается сумма ставок, выиграли вы или проиграли, неважно. Бонус ${m(100)} с вейджером ×15: ставки на ${m(1500)} в играх из условий.`],
   ["Какие игры идут в отыгрыш?","У каждого бонуса свой список. Он в условиях бонуса: кнопка со значком i."],
   ["Можно взять несколько бонусов?","Да. Отыгрывается один, следующие начинаются сами, по очереди. Срок каждого идёт с момента получения."],
   ["Сколько времени на отыгрыш?","Срок указан в условиях бонуса. Ваши деньги остаются на балансе в любом случае."]];
-const faq=()=>`<h2 class="sh">Как работает бонус</h2><p class="shsub">Четыре шага, и бонус становится вашими деньгами</p><div class="how2">${HOW.map(([a,t,d],i)=>`<div class="hs"><div class="ht"><span class="hn">${i+1}</span><img class="art" src="${ASSET[a]}" alt=""></div><div class="hb"><b>${t}</b><span>${d}</span></div></div>`).join("")}</div>
+const faq=()=>`<h2 class="sh">Как работает бонус</h2><p class="shsub">Четыре шага до реальных денег</p><div class="how2">${HOW.map(([a,t,d],i)=>`<div class="hs"><div class="ht"><span class="hn">${i+1}</span><img class="art" src="${ASSET[a]}" alt=""></div><div class="hb"><b>${t}</b><span>${d}</span></div></div>`).join("")}</div>
   <h2 class="sh fqh"><svg class="i" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M6.3 6.3a1.8 1.8 0 013.4.7c0 1.2-1.7 1.5-1.7 2.5M8 11.4v.1"/></svg>Частые вопросы</h2><div class="faq">${FAQ().map(([q,a])=>`<button class="q" aria-expanded="false" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')!=='true')">${q}<i>+</i></button><div class="a">${a}</div>`).join("")}</div>`;
 const ALL=["fri","ten","slots"]; /* 23.11: бонус уровня видят только игроки этого уровня. Игрок в примере Gold, новый игрок и гость без уровня. Иконка обычная, по типу бонуса */
 /* Промокод: первым, если нет активного бонуса и очереди; иначе сразу после них, перед пакетом */
-const promoSec=()=>`<section class="psec"><h2 class="sh">Промокод</h2><p class="shsub">Введите бонусный код: бонус появится первым в списке или сразу встанет в очередь</p>${promoBox("page")}</section>`;
+const promoSec=()=>`<section class="psec"><h2 class="sh">Промокод</h2>${promoBox("page")}</section>`;
 const page=(o={})=>{CUR=PC();const t=table();CUR=curNow();const c=catalog(o.keys||ALL,o);CUR=PC();return site(t+promoSec()+c,o)};
 /* Гость: бонус за регистрацию: тот же купон, только широкий */
 const guestPage=()=>{const b=B.reg;return site(`<section class="panel acc tb gtb" data-f="Бонус за регистрацию: тот же блок, что активный бонус">
@@ -2082,7 +2087,7 @@ function openSections(tab,guest){
 function openPromoDlg(){
   const ok=PROMO.st==="ok"||PROMO.st==="inst";
   showDlg(`<div class="dlg prof pdlg" role="dialog" aria-modal="true" aria-label="Промокод">
-    <div class="dcard pd-h"><b>Промокод</b><span>Введите бонусный код: бонус появится первым в списке или сразу встанет в очередь</span>${promoBox("dlg")}</div>
+    <div class="dcard pd-h"><b>Промокод</b>${promoBox("dlg")}</div>
     <div class="dlg-ft">${ok?`<button class="btn s" onclick="closeDlg()">Закрыть</button><button class="btn p" onclick="closeDlg();go('main')">К бонусам</button>`:`<button class="btn s" onclick="closeDlg()">Закрыть</button>`}</div></div>`,"#pc-dlg");
 }
 function openProfile(){
