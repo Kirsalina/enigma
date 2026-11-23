@@ -1645,6 +1645,14 @@ button.ava{border:0;cursor:pointer;font:inherit;font-weight:700}
 .dlg-bg .drw .dlg>.dcard:first-child,.dlg-bg .drw .scroll>.dcard:first-child,.dlg-bg .drw .dcard.pf-u,.dlg-bg .drw .dcard.thc,.dlg-bg .drw .pf-t>.dcard:first-child{box-shadow:inset 0 1.5px 0 rgba(198,171,252,.75),0 -6px 18px -10px rgba(198,171,252,.45),0 0 0 1px var(--o),0 12px 32px -8px rgba(0,0,0,.45)!important}
 /* Экран 26: серый цвет «нет/условия» только в таблице, не в суммах купонов */
 .core .of b .n,.core .nx .n,.core .tile .n{color:inherit!important}
+/* 23.11 Условие по уровню: корона в чипе (тот же значок, что у вкладки «Клуб») */
+.chip2.lv{display:inline-flex;align-items:center;gap:4px}
+.chip2.lv svg{width:12px!important;height:12px!important;flex:none}
+/* Клуб: блок бонусов уровня под панелью уровня */
+.club-stub{margin-top:40px}
+.clubb{margin-top:48px}.f390 .clubb{margin-top:40px}
+.clubb>.sh{margin:0 0 16px!important}
+.clubb>.sh:has(+.shsub){margin-bottom:0!important}.clubb>.shsub{margin:4px 0 16px!important}
 </style>
 </head>
 <body>
@@ -1687,6 +1695,8 @@ button.ava{border:0;cursor:pointer;font:inherit;font-weight:700}
     <button data-s="histempty">25. История пустая</button>
     <small>Система</small>
     <button data-s="core">26. Ядро бонуса</button>
+    <small>Клуб</small>
+    <button data-s="club">27. Бонусы уровня в Клубе (игрок Silver)</button>
   </nav>
   <div class="stage"><div class="frame" id="frame" data-w="1440"></div></div>
 </div>
@@ -1716,7 +1726,7 @@ const I={
   none:'<svg class="i" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M4 12l8-8"/></svg>'
 };
 const LEVELS=["Без ранга","Iron","Bronze","Silver","Gold","Platinum","Diamond","Emerald","Ruby","Obsidian"];
-const TOP=LEVELS.length-1, ME={level:3}, TO={3:[2100,72],4:[12400,38],8:[486000,4]};
+const TOP=LEVELS.length-1, ME={level:3}, TO={3:[2100,72],4:[12400,38],7:[137400,8],8:[486000,4]};
 
 /* Шаблоны бонусов: только поля админки и ТЗ. Суммы в USD, валюта примера пересчитывает их для показа */
 const B={
@@ -1782,6 +1792,8 @@ const key=b=>Object.keys(B).find(k=>B[k]===b);
 /* Подпись уровней (23.11): «Только Gold», «Gold и выше», «Emerald и ниже», «от Silver до Gold» */
 const lvlText=r=>r.map(([a,b])=>a===b?`Только ${LEVELS[a]}`:b===TOP?`${LEVELS[a]} и выше`:a===0?`${LEVELS[b]} и ниже`:`от ${LEVELS[a]} до ${LEVELS[b]}`).join(", ");
 const fits=b=>!b.lvl||b.lvl.some(([a,c])=>ME.level>=a&&ME.level<=c);
+/* «За уровень»: у условия есть нижняя граница (=, ≥, от–до). Только у таких корона и первое место. «≤» доступен с самого начала */
+const ach=b=>!!b.lvl&&b.lvl.some(([a])=>a>0);
 const amtH=b=>b.type==="fs"?`<span class="n">${b.val}${NB}FS</span>`:b.type==="fix"?mh(b.val,"+"):`<span class="n">${pct(b.val)}</span>`;
 const cap=(b,bare)=>{const v=bare?num(b.cap):m(b.cap);return b.type==="pack"?`до ${v} и ${b.fs} фриспинов`:b.type==="pct"?`до ${v}`:""};
 const offer=b=>`<div class="of"><b data-f="Сумма или %">${amtH(b)}</b><span data-f="Лимит бонуса">${cap(b)}</span></div>`;
@@ -1795,7 +1807,7 @@ const ibtn=(k,ctx,sz="sm")=>`<button class="btn s ${sz} sq" aria-label="Усло
 /* Метка: чип в углу купона, как «Первый депозит» на живой карточке */
 function label(b,locked,guest){
   if(b.promo) return `<span class="chip2 lv" data-f="Получен по промокоду">Промокод</span>`;
-  if(b.lvl) return `<span class="chip2 lv" data-f="Уровни (новое)">${lvlText(b.lvl)}</span>`;
+  if(b.lvl) return `<span class="chip2 lv" data-f="Условие по уровню (новое)">${ach(b)?I.crown:""}${lvlText(b.lvl)}</span>`;
   if(b.depNo) return `<span class="chip2" data-f="Номер депозита (новое)">${b.depNo}-й депозит</span>`;
   if(b.until) return `<span class="chip2" data-f="Период действия: конец">Взять до ${b.until}</span>`;
   return "";
@@ -1806,7 +1818,7 @@ function card(b,o={}){
   if(o.act!==undefined) main=o.act;
   else if(b.future) main=`<button class="btn p sm full" disabled>Получить</button>`;
   else if(glock) main=`<span class="st">${I.lock}${LEVELS[b.lvl[0][0]]}</span>`;
-  else if(locked){const t=TO[lv]; main=t?`<div class="lock" data-f="Прогресс до следующего уровня (сервис Клуба)"><span>Ещё ${m(t[0],"USD")} ставок до <b>${LEVELS[lv]}</b></span><div class="bar thin"><i style="width:${t[1]}%"></i></div></div>`:`<span class="st">${I.lock}${LEVELS[lv]}</span>`;}
+  else if(locked){main=`<span class="stp" data-f="Бонус откроется на уровне (условие по уровню)">Откроется на ${LEVELS[lv]}</span>`;} /* 23.11: без прогресса на карточке, прогресс один раз в заголовке блока Клуба */
   else {live=true; main=`<button class="btn p sm full ${o.cls==="hot"?"glow":""}" onclick="${o.guest?"go('reg')":`getBonus('${k}')`}">Получить</button>`;}
   const view=locked||glock||b.future||o.view;
   return `<div class="cw ${o.cls||""} ${locked||glock?"lock":""} ${live?"live":""}"><article class="bc">
@@ -1841,7 +1853,7 @@ const curNow=()=>walletCur();
 function sortBonuses(keys){
   const due=b=>b.until?Date.parse("2026 "+b.until.replace("декабря","Dec").replace("ноября","Nov"))||9e15:9e15;
   /* Бонус для уровней ниже игрока не показываем: взять его уже нельзя */
-  return keys.map(k=>B[k]).filter(b=>(PF==="all"||forCur(b,curNow()))&&!b.depNo&&!(b.limit&&b.got>=b.limit)&&!(b.lvl&&!fits(b)&&!b.lvl.some(([a])=>a>ME.level))).sort((a,b)=>due(a)-due(b));
+  return keys.map(k=>B[k]).filter(b=>(PF==="all"||forCur(b,curNow()))&&!b.depNo&&!(b.limit&&b.got>=b.limit)&&!(b.lvl&&!fits(b)&&!b.lvl.some(([a])=>a>ME.level))).sort((a,b)=>((ach(b)&&fits(b))?1:0)-((ach(a)&&fits(a))?1:0)||due(a)-due(b)); /* 23.11: бонусы, открытые уровнем, первыми */
 }
 /* Один кегль суммы на весь ряд: берём самый длинный */
 const zRow=list=>Math.max(1,...list.map(b=>zOf(amtH(b))));
@@ -2036,6 +2048,13 @@ const cashOut=()=>{const A=50,bal=ST.zero?0:215,k=ST.act,a=k&&PB[k];
       <div class="panel srows">${kv("Вывод",m(A))}${kv("Комиссия",m(0))}${a?kv("Бонусный баланс","−"+m(a.amt))+(a.done?kv("Отыграно",`${m(a.done)} из ${m(a.need)}`):"")+(ST.queue.length?kv("Бонусы в очереди","Останутся"):""):""}
       <div class="kv tot"><span>Останется на балансе</span><b>${m(bal-A)}</b></div></div></div></div>
   </div>${side}</div>${dlgBg}`};
+/* Клуб: бонусы выбранного уровня (предложение Серёжи 23.11). Шкала уровней и «Что даёт» как на сайте; ниже блок бонусов уровня.
+   Доступные игроку: обычный купон с «Получить». Недоступные: информационная карточка с прогрессом до уровня (данные из сервиса Клуба) */
+/* Клуб (предложение Серёжи, 23.11): на панели уровня выше текущего — бонусы, которые на нём откроются. Уже доступные сюда не попадают (они в общем списке).
+   Прогресс один раз в заголовке блока (данные шкалы Клуба), на карточке вместо кнопки плашка «Откроется на Gold» */
+const clubPage=()=>{const sel=4,t=TO[sel],list=["lvr","lvb","gold","lvo"].map(k=>B[k]).filter(b=>!fits(b)&&b.lvl.some(([a,c])=>sel>=a&&sel<=c));
+  return site(`<div class="stub club-stub" data-f="Как на сайте сейчас">Шкала уровней и «Что даёт ${LEVELS[sel]}»: как на сайте сейчас</div>
+  <section class="clubb"><h2 class="sh">Бонусы уровня ${LEVELS[sel]}</h2><p class="shsub" data-f="Прогресс до уровня (сервис Клуба)">Ещё ${m(t[0],"USD")} ставок до ${LEVELS[sel]}</p>${grid(list,{cut:0})}</section>`,{tab:"Клуб",faq:false})};
 let REG="none";
 const setReg=v=>{REG=v;const e=document.getElementById("ropts");if(e)e.outerHTML=regOpts();fitAll()};
 const regOpts=()=>`<div class="tiles" id="ropts">${tile("none","setReg",REG)}${tile("reg","setReg",REG)}</div>`;
@@ -2220,6 +2239,7 @@ const S={
   hist:{st:{act:"w1",queue:["fri","ten"],wel:W1},r:()=>site(hist(),{tab:"История",faq:false})},
   histempty:{st:{act:null,queue:[],wel:W0},r:()=>site(hist(1),{tab:"История",faq:false})},
   ntf:{st:{act:"ten",queue:[],wel:WD},r:()=>page({ntf:1,unread:1})},
+  club:{lvl:3,st:{act:"fri",queue:[],wel:WD},r:()=>clubPage()},
   core:{lvl:4,st:{act:null,queue:[],wel:WD},r:()=>coreSheet()}
 };
 let cur="main", ARG;
