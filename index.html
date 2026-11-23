@@ -1653,6 +1653,44 @@ button.ava{border:0;cursor:pointer;font:inherit;font-weight:700}
 .clubb{margin-top:48px}.f390 .clubb{margin-top:40px}
 .clubb>.sh{margin:0 0 16px!important}
 .clubb>.sh:has(+.shsub){margin-bottom:0!important}.clubb>.shsub{margin:4px 0 16px!important}
+/* ── Клуб 23.11: шкала уровней, панель уровня, бонусы, которые откроются ── */
+.clubtop{margin-top:40px}
+.lvtrack{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:4px;position:relative}
+.lvi{display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 4px 14px;border-radius:12px;background:none;border:0;color:var(--text);cursor:pointer;position:relative;font:inherit;text-align:center}
+.lvi .lvb{margin-bottom:6px}
+.lvi .lvn{font-size:11px;line-height:16px;font-weight:500;letter-spacing:1.1px;text-transform:uppercase;color:var(--muted)}
+.lvi b{font-size:14px;line-height:20px;font-weight:600;color:var(--title)}
+.lvi small{font-size:12px;line-height:16px;color:var(--muted)}
+.lvi:not(.got) .lvb{opacity:.55}
+.lvi.on{box-shadow:inset 0 -2px 0 var(--primary)}
+.lvi.on b{color:var(--selected)}
+.lvi .chip2.me{margin-top:6px}
+.lvp{margin-top:16px;display:grid;grid-template-columns:220px minmax(0,1fr);gap:24px;padding:var(--pad)!important}
+.lvp-l{display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding-right:24px;box-shadow:inset -1px 0 0 var(--div)}
+.lvp-l b{display:block;font-size:30px;line-height:36px;font-weight:600;color:var(--title)}
+.lvp-r h3{margin:2px 0 16px;font-size:20px;line-height:28px;font-weight:600;color:var(--title)}
+.lvp .eyebrow{display:block;font-size:11px;line-height:16px;font-weight:500;letter-spacing:1.1px;text-transform:uppercase;color:var(--muted)}
+.lvprog{display:grid;gap:8px;padding:12px 16px;border-radius:12px;background:var(--fill);box-shadow:inset 0 0 0 1px var(--o);margin-bottom:12px}
+.lvprog-t{display:flex;justify-content:space-between;gap:12px;font-size:14px;line-height:20px;color:var(--text)}
+.lvprog-t b{color:var(--title);font-weight:600}.lvprog-t em{font-style:normal;color:var(--muted);font-size:13px}
+.lvprog .bar{height:6px;border-radius:999px;background:rgba(233,233,237,.08);overflow:hidden}.lvprog .bar i{display:block;height:100%;border-radius:999px;background:var(--primary)}
+.lvprog.done span{display:inline-flex;gap:8px;align-items:center;font-size:14px;line-height:20px;color:var(--green)}
+.lvperk{display:flex;gap:10px;align-items:flex-start;padding:12px 0;box-shadow:inset 0 -1px 0 var(--div);font-size:14px;line-height:20px;color:var(--text)}
+.lvperk:last-child{box-shadow:none}
+.lvperk svg{width:16px;height:16px;flex:none;margin-top:2px;color:var(--green)}
+.lvperk.off{color:var(--muted)}.lvperk.off svg{color:var(--muted)}
+.lvperk small{display:block;font-size:12px;line-height:16px;color:var(--muted2)}
+.clubb{margin-top:48px}.f390 .clubb{margin-top:40px}
+/* iPad и телефон: шкала листается вбок, как категории на сайте; панель в одну колонку */
+.f820 .lvtrack,.f390 .lvtrack{display:flex;overflow-x:auto;scrollbar-width:none;margin:0 calc(var(--pad)*-1);padding:0 var(--pad)}
+.f820 .lvtrack::-webkit-scrollbar,.f390 .lvtrack::-webkit-scrollbar{display:none}
+.f820 .lvi,.f390 .lvi{flex:0 0 96px}
+.f390 .lvp{grid-template-columns:1fr;gap:16px}
+.f390 .lvp-l{flex-direction:row;align-items:center;padding:0 0 16px;box-shadow:inset 0 -1px 0 var(--div)}
+.f390 .lvp-l .lvb{width:64px;height:64px}
+.f390 .lvprog-t{flex-direction:column;gap:2px}
+.lvi .chip2.me{position:static!important;margin-top:6px;transform:none!important}
+.lvi .chip2.me{max-width:none!important;overflow:visible!important;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -1729,7 +1767,7 @@ const I={
   none:'<svg class="i" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M4 12l8-8"/></svg>'
 };
 const LEVELS=["Без ранга","Iron","Bronze","Silver","Gold","Platinum","Diamond","Emerald","Ruby","Obsidian"];
-const TOP=LEVELS.length-1, ME={level:3}, TO={3:[2100,72],4:[12400,38],7:[137400,8],8:[486000,4]};
+const TOP=LEVELS.length-1, ME={level:3}, TO={3:[2100,72],4:[9300,38],7:[134300,10],8:[284300,5]};
 
 /* Шаблоны бонусов: только поля админки и ТЗ. Суммы в USD, валюта примера пересчитывает их для показа */
 const B={
@@ -2053,11 +2091,25 @@ const cashOut=()=>{const A=50,bal=ST.zero?0:215,k=ST.act,a=k&&PB[k];
   </div>${side}</div>${dlgBg}`};
 /* Клуб: бонусы выбранного уровня (предложение Серёжи 23.11). Шкала уровней и «Что даёт» как на сайте; ниже блок бонусов уровня.
    Доступные игроку: обычный купон с «Получить». Недоступные: информационная карточка с прогрессом до уровня (данные из сервиса Клуба) */
-/* Клуб (предложение Серёжи, 23.11): на панели уровня выше текущего — бонусы, которые на нём откроются. Уже доступные сюда не попадают (они в общем списке).
-   Прогресс один раз в заголовке блока (данные шкалы Клуба), на карточке вместо кнопки плашка «Откроется на Gold» */
-const clubPage=()=>{const sel=4,t=TO[sel],list=["lvr","lvb","gold","lvo"].map(k=>B[k]).filter(b=>!fits(b)&&b.lvl.some(([a,c])=>sel>=a&&sel<=c));
-  return site(`<div class="stub club-stub" data-f="Как на сайте сейчас">Шкала уровней и «Что даёт ${LEVELS[sel]}»: как на сайте сейчас</div>
-  <section class="clubb"><h2 class="sh">Бонусы уровня ${LEVELS[sel]}</h2><p class="shsub" data-f="Прогресс до уровня (сервис Клуба)">Ещё ${m(t[0],"USD")} ставок до ${LEVELS[sel]}</p>${grid(list,{cut:0})}</section>`,{tab:"Клуб",faq:false})};
+/* ── Клуб (как на сайте: шкала уровней → панель «Что даёт» → бонусы, которые откроются). 23.11 ──
+   Пороги и награды из Клуба. Игрок Silver, сумма ставок $15 700 (38 % до Gold, как в профиле).
+   Клик по уровню выбирает его. Блок бонусов только у уровней выше текущего: бонусы, которые на нём откроются (уже доступные в общем списке) */
+const CLV=[[1,1500,5],[2,3500,10],[3,10000,25],[4,25000,50],[5,50000,100],[6,90000,200],[7,150000,400],[8,300000,800],[9,500000,0]];
+const LVC=["#8E929C","#B9784A","#C9CCD6","#D9B44C","#DCDDEA","#8B5CF6","#3FBF7F","#E0505F","#6B5B95"];
+const CTOTAL=15700; let CSEL=4;
+const hexB=(i,sz=56)=>`<svg class="lvb" width="${sz}" height="${sz}" viewBox="0 0 56 56" aria-hidden="true"><defs><linearGradient id="lg${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${LVC[i-1]}"/><stop offset="1" stop-color="${LVC[i-1]}" stop-opacity=".55"/></linearGradient></defs><path d="M28 3l21.7 12.5v25L28 53 6.3 40.5v-25z" fill="url(#lg${i})"/><path d="M28 12l14 8v16l-14 8-14-8V20z" fill="rgba(13,12,22,.35)"/></svg>`;
+const clubPage=()=>{const me=ME.level,sel=CSEL,[,from,rw]=CLV[sel-1],left=Math.max(0,from-CTOTAL);
+  const base=CLV[me-1][1], pct=Math.max(0,Math.min(100,Math.round((CTOTAL-base)/(from-base)*100))); /* от порога текущего уровня до выбранного: до Gold 38 %, как в профиле */
+  const track=`<div class="lvtrack" data-f="Шкала уровней (как на сайте)">${CLV.map(([n,f])=>`<button class="lvi ${n===sel?"on":""} ${n<=me?"got":""}" onclick="CSEL=${n};draw()">${hexB(n)}<span class="lvn">Уровень ${n}</span><b>${LEVELS[n]}</b><small>от ${m(f,"USD")}</small>${n===me?`<span class="chip2 me">Ваш уровень</span>`:""}</button>`).join("")}</div>`;
+  const prog=sel>me?`<div class="lvprog" data-f="Прогресс до уровня (сервис Клуба)"><div class="lvprog-t"><span>Ещё <b>${m(left,"USD")}</b> ставок до ${LEVELS[sel]}</span><em>${pct} %</em></div><div class="bar"><i style="width:${pct}%"></i></div></div>`
+    :`<div class="lvprog done"><span>${I.tick}${sel===me?"Ваш уровень":"Уровень пройден"}</span></div>`;
+  const panel=`<section class="panel lvp"><div class="lvp-l">${hexB(sel,96)}<div><span class="eyebrow">Награда за уровень</span><b data-f="Бонус level-up (по claim)">${rw?m(rw,"USD"):"Особая"}</b></div></div>
+    <div class="lvp-r"><span class="eyebrow">Уровень ${sel}</span><h3>Что даёт ${LEVELS[sel]}</h3>${prog}
+      <div class="lvperk">${I.tick}<span>Рейкбэк и бусты по настройкам уровня</span></div>
+      <div class="lvperk off">${I.lock}<span>Персональный бонус<small>Не на этом уровне</small></span></div></div></section>`;
+  const list=sel>me?["lvr","lvb","gold","lvo","ruby"].map(k=>B[k]).filter(b=>!fits(b)&&b.lvl.some(([a,c])=>sel>=a&&sel<=c)):[];
+  const bon=list.length?`<section class="clubb"><h2 class="sh">Откроются на ${LEVELS[sel]}</h2>${grid(list,{cut:0})}</section>`:"";
+  return site(`<section class="clubtop">${track}</section>${panel}${bon}`,{tab:"Клуб",faq:false})};
 let REG="none";
 const setReg=v=>{REG=v;const e=document.getElementById("ropts");if(e)e.outerHTML=regOpts();fitAll()};
 const regOpts=()=>`<div class="tiles" id="ropts">${tile("none","setReg",REG)}${tile("reg","setReg",REG)}</div>`;
@@ -2254,6 +2306,7 @@ function go(s,arg,reset){
   if(reset){FORCECUR=S[s].cur||null;PF=S[s].pf||null;WALLETS=S[s].wallets||null;ME.level=S[s].lvl??3}
   if(reset) ST={zero:false,soon:false,gone:[],...S[s].st,queue:[...S[s].st.queue],extra:[...(S[s].st.extra||[])]};
   if(reset) PROMO={v:S[s].pv||"",st:S[s].ps||""};
+  if(reset) CSEL=4;
   closeDlg(); cur=s;ARG=arg;
   const cb=document.getElementById("curbox"); if(cb) cb.style.display=s.startsWith("cash")?"none":"";
   document.querySelectorAll("#states button").forEach(b=>b.classList.toggle("on",b.dataset.s===s));
@@ -2270,6 +2323,7 @@ function draw(fresh,first){
 }
 /* Кегль суммы: по измеренной ширине поля, а не по числу знаков. В ряду купонов кегль один */
 function fitAll(){
+  {const t=document.querySelector("#frame .lvtrack"),o=t&&t.querySelector(".lvi.on");if(t&&o&&t.scrollWidth>t.clientWidth)t.scrollLeft=Math.max(0,o.offsetLeft-t.clientWidth/2+o.offsetWidth/2);} /* Клуб: выбранный уровень в центре шкалы */
   /* Кнопки активного блока: ровно той же высоты, что текст рядом */
   const wide=!/f(390|820)/.test(document.getElementById("frame").className);
   
