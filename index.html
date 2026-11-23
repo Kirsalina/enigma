@@ -1539,6 +1539,65 @@ button.ava{border:0;cursor:pointer;font:inherit;font-weight:700}
 .tw2.off:not(.on) .side .chk{visibility:visible!important;opacity:.35}
 .tw2.off:not(.on) .tile{pointer-events:auto}
 .tw2.off:not(.on) .tile .side .btn{pointer-events:auto}
+
+/* ═════════════ 23.11 АУДИТ: токены и единые размеры (главнее всего выше) ═════════════
+   Цвета только из бренда: --page #111018, --card, --text #E9E9ED, --title #F5F4FF, --muted #9690AB, --muted2 #78728C,
+   --primary #A384D9, --selected #C6ABFC, --dark #0D0C16, --green #4EC98A, --red #F28D92, --solid #1B1924.
+   Прозрачности белого (text): обводка .08, разделитель .10, заливка .04, дорожка прогресса .08.
+   Скругления: 4 / 6 / 8 / 12 / 16 / круг. Отступы внутри блоков: ПК 20, телефон 16. Между разделами: ПК 48, телефон 40. Заголовок → содержимое 16. */
+:root{--o:rgba(233,233,237,.08);--div:rgba(233,233,237,.10);--fill:rgba(233,233,237,.04)}
+/* обводки фигур с вырезами и карточек: одна */
+.cw,.cw.dim,.cw.hot,.cw.lock,.tw2,.pw{--st:var(--o)}
+@media (hover:hover){.tw2:not(.on):hover{--st:var(--o)!important}}
+.pw:focus-within:not(.good):not(.err){--st:var(--o)!important}
+.drw .dcard,.dcard{box-shadow:inset 0 0 0 1px var(--o),0 12px 32px -8px rgba(0,0,0,.45)}
+.drw .dcard:first-child,.drw .dcard.pf-u,.drw .dcard.thc{box-shadow:inset 0 1px 0 0 rgba(198,171,252,.6),inset 0 0 0 1px var(--o),0 12px 32px -8px rgba(0,0,0,.45)}
+.chip2,.hrow .st,.stp,.panel.nxp,.dlg .foot,.stub:not(.tile .stub):not(.cst>.stub),.pf-av{box-shadow:inset 0 0 0 1px var(--o)!important}
+.nxp .more,.nx+.nx{border-color:var(--div)!important}
+/* заливки: одна */
+.btn.s,.stp,.segm,.curf2,.fld>div{background:var(--fill)}
+.pin input,.reg input,.fld input{background:rgba(13,12,22,.55)!important;box-shadow:inset 0 0 0 1px rgba(150,144,171,.32)}
+/* служебный текст макета тоже из палитры */
+.core h5,div>h5,.step>.stub{color:var(--muted2)!important}
+/* скругления */
+.pin input,.stp,input{border-radius:8px!important}
+.dcard,.drw .dcard{border-radius:16px}
+/* типографика: шкала 11/16, 12/16, 13/20, 14/20, 16/22, 18/24, 20/28, 24/32, 30/36, 36/40, 44/48; веса 400/500/600 */
+.step h3{font-size:20px;line-height:28px;font-weight:600!important}
+.ops h3{font-size:16px;line-height:22px}
+.dtitle{font-size:18px;line-height:24px;font-weight:600}
+.pay strong{font-size:30px;line-height:36px;font-weight:600!important}
+.srows .kv.tot b{font-size:20px;line-height:28px;font-weight:600}
+.kv>span,.kv>b{line-height:20px}
+.faq .q{line-height:20px}
+.drw .pf-m button{line-height:20px}
+.eyebrow{letter-spacing:1.1px!important}
+/* значок % у кольца: один размер везде */
+.ring .pc,.f390 .ring .pc,.cst2 .ring .pc,.pf-b .ring .pc{height:20px!important;line-height:20px!important;font-size:11px!important;font-weight:600;padding:0 8px!important;border-radius:10px!important;bottom:-6px!important}
+/* отступы внутри блоков */
+.panel.acc.tb{padding:20px!important}.f390 .panel.acc.tb{padding:16px!important}
+.panel.nxp{padding:20px 20px 8px!important}.f390 .panel.nxp{padding:16px 16px 4px!important}
+.pw .promo2 .pbody{padding:20px!important}.f390 .pw .promo2 .pbody{padding:16px!important}
+.hb{padding:16px!important}.f390 .hb{padding:12px 16px!important}
+.drw .dcard.pf-b,.drw .dcard.pf-u,.drw .dcard.thc,.drw .dcard.tnote{padding:16px!important}
+/* расстояния между разделами */
+.rhero+*{margin-top:40px!important}
+.sech{margin-top:48px!important;margin-bottom:16px!important}
+.f390 .sech{margin-top:40px!important}
+.rhero+.sech{margin-top:40px!important}
+.sech+.panel.empty2{margin-top:0!important}
+.shsub+.how2{margin-top:16px!important}
+.hist{margin-top:40px!important}
+/* «Как работает бонус» на телефоне: карточки шагов одной высоты */
+.f390 .hs{min-height:128px}
+.shsub{margin:4px 0 0!important}
+.shsub+.how2,.psec .shsub+.pw{margin-top:16px!important}
+.sech-t .shsub{margin:0!important}
+.sh:has(+.shsub){margin-bottom:0!important}
+.drw .dlg-ft .btn,.drw button.dcard{box-shadow:inset 0 0 0 1px var(--o),0 12px 32px -8px rgba(0,0,0,.45)!important}
+.drw .dlg-ft .btn.p{box-shadow:0 12px 32px -8px rgba(0,0,0,.45)!important}
+.btn.s:not(:hover),.stub:not(.tile .stub):not(.cst>.stub){background:var(--fill)!important}
+.check i{box-shadow:inset 0 0 0 1.5px rgba(150,144,171,.45)!important}
 </style>
 </head>
 <body>
@@ -1609,7 +1668,7 @@ const I={
   none:'<svg class="i" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M4 12l8-8"/></svg>'
 };
 const LEVELS=["Без ранга","Iron","Bronze","Silver","Gold","Platinum","Diamond","Emerald","Ruby","Obsidian"];
-const TOP=LEVELS.length-1, ME={level:4}, TO={3:[2100,72],4:[12400,38],8:[486000,4]};
+const TOP=LEVELS.length-1, ME={level:3}, TO={3:[2100,72],4:[12400,38],8:[486000,4]};
 
 /* Шаблоны бонусов: только поля админки и ТЗ. Суммы в USD, валюта примера пересчитывает их для показа */
 const B={
@@ -2094,7 +2153,7 @@ const S={
 };
 let cur="main", ARG;
 function go(s,arg,reset){
-  if(reset){FORCECUR=S[s].cur||null;PF=S[s].pf||null;WALLETS=S[s].wallets||null;ME.level=S[s].lvl??4}
+  if(reset){FORCECUR=S[s].cur||null;PF=S[s].pf||null;WALLETS=S[s].wallets||null;ME.level=S[s].lvl??3}
   if(reset) ST={zero:false,soon:false,gone:[],...S[s].st,queue:[...S[s].st.queue],extra:[...(S[s].st.extra||[])]};
   if(reset) PROMO={v:S[s].pv||"",st:S[s].ps||""};
   closeDlg(); cur=s;ARG=arg;
