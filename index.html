@@ -1556,29 +1556,30 @@ button.ava{border:0;cursor:pointer;font:inherit;font-weight:700}
     <button data-s="regdone">3. После регистрации с бонусом</button>
     <button data-s="noact">4. Новый игрок</button>
     <button data-s="guest">5. Гость</button>
-    <button data-s="longq">6. 12 бонусов в очереди</button>
-    <button data-s="profile">7. Профиль: активный бонус</button>
-    <button data-s="profilenone">8. Профиль: бонуса нет</button>
-    <button data-s="promoerr">9. Промокод: не действует / истёк</button>
-    <button data-s="promoinst">10. Промокод: активирован</button>
-    <button data-s="cryptolong">11. Крипта: самая длинная сумма ($1 в BTC)</button>
-    <button data-s="curempty">12. Валюта без бонусов</button>
-    <button data-s="many">13. Много бонусов</button>
-    <button data-s="terms">14. Условия: все поля</button>
-    <button data-s="termsmin">15. Условия: минимум полей</button>
-    <button data-s="cancel">16. Отмена</button>
+    <button data-s="lvgold">6. Игрок Gold: бонус его уровня</button>
+    <button data-s="longq">7. 12 бонусов в очереди</button>
+    <button data-s="profile">8. Профиль: активный бонус</button>
+    <button data-s="profilenone">9. Профиль: бонуса нет</button>
+    <button data-s="promoerr">10. Промокод: не действует / истёк</button>
+    <button data-s="promoinst">11. Промокод: активирован</button>
+    <button data-s="cryptolong">12. Крипта: самая длинная сумма ($1 в BTC)</button>
+    <button data-s="curempty">13. Валюта без бонусов</button>
+    <button data-s="many">14. Много бонусов</button>
+    <button data-s="terms">15. Условия: все поля</button>
+    <button data-s="termsmin">16. Условия: минимум полей</button>
+    <button data-s="cancel">17. Отмена</button>
     <small>Касса</small>
-    <button data-s="cash">17. Касса</button>
-    <button data-s="cashpick">18. Пришёл по «Получить»</button>
-    <button data-s="cashmin">19. Суммы не хватает на бонусы</button>
-    <button data-s="cashnone">20. Нет бонусов в валюте</button>
+    <button data-s="cash">18. Касса</button>
+    <button data-s="cashpick">19. Пришёл по «Получить»</button>
+    <button data-s="cashmin">20. Суммы не хватает на бонусы</button>
+    <button data-s="cashnone">21. Нет бонусов в валюте</button>
     <small>Регистрация</small>
-    <button data-s="reg">21. Выбор бонуса</button>
+    <button data-s="reg">22. Выбор бонуса</button>
     <small>История и уведомления</small>
-    <button data-s="hist">22. История</button>
-    <button data-s="histempty">23. История пустая</button>
+    <button data-s="hist">23. История</button>
+    <button data-s="histempty">24. История пустая</button>
     <small>Система</small>
-    <button data-s="core">24. Ядро бонуса</button>
+    <button data-s="core">25. Ядро бонуса</button>
   </nav>
   <div class="stage"><div class="frame" id="frame" data-w="1440"></div></div>
 </div>
@@ -1819,7 +1820,7 @@ const FAQ=()=>[["Что такое вейджер?",`Сколько нужно �
   ["Сколько времени на отыгрыш?","Срок указан в условиях бонуса. Ваши деньги остаются на балансе в любом случае."]];
 const faq=()=>`<h2 class="sh">Как работает бонус</h2><p class="shsub">Четыре шага, и бонус становится вашими деньгами</p><div class="how2">${HOW.map(([a,t,d],i)=>`<div class="hs"><div class="ht"><span class="hn">${i+1}</span><img class="art" src="${ASSET[a]}" alt=""></div><div class="hb"><b>${t}</b><span>${d}</span></div></div>`).join("")}</div>
   <h2 class="sh fqh"><svg class="i" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M6.3 6.3a1.8 1.8 0 013.4.7c0 1.2-1.7 1.5-1.7 2.5M8 11.4v.1"/></svg>Частые вопросы</h2><div class="faq">${FAQ().map(([q,a])=>`<button class="q" aria-expanded="false" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')!=='true')">${q}<i>+</i></button><div class="a">${a}</div>`).join("")}</div>`;
-const ALL=["fri","ten","slots","gold"]; /* 23.11: бонус уровня видят только игроки этого уровня. Игрок в примере Gold, новый игрок и гость без уровня. Иконка обычная, по типу бонуса */
+const ALL=["fri","ten","slots"]; /* 23.11: бонус уровня видят только игроки этого уровня. Игрок в примере Gold, новый игрок и гость без уровня. Иконка обычная, по типу бонуса */
 const page=(o={})=>{CUR=PC();const t=table();CUR=curNow();const c=catalog(o.keys||ALL,o);CUR=PC();return site(t+c,o)};
 /* Гость: бонус за регистрацию: тот же купон, только широкий */
 const guestPage=()=>{const b=B.reg;return site(`<section class="panel acc tb gtb" data-f="Бонус за регистрацию: тот же блок, что активный бонус">
@@ -2064,7 +2065,7 @@ const S={
   guest:{st:{act:null,queue:[],wel:W0},r:()=>guestPage()},
   lvbronze:{lvl:2,st:{act:null,queue:[],wel:WD},r:()=>page()},
   lvdiamond:{lvl:7,st:{act:null,queue:[],wel:WD},r:()=>page()},
-  lvgold:{lvl:4,st:{act:null,queue:[],wel:WD},r:()=>page()},
+  lvgold:{lvl:4,st:{act:"fri",queue:[],wel:WD},r:()=>page({keys:["gold","ten","slots"]})}, /* бонус уровня: отдельный экран, игрок Gold */
   cryptolong:{cur:"BTC",st:{act:"w1",queue:["one","fri"],wel:W1},r:()=>page()},
   longq:{st:{act:"w1",queue:["fri","ten","slots","wk","mn","rl","nowag","long","w2","w3","promo","promo10"],wel:W1},r:()=>page()},
   profile:{st:{act:"w1",queue:["fri","ten"],wel:W1},r:(arg,re)=>{if(!document.querySelector("#dlg .pdlg"))setTimeout(openProfile,0);return page()}},
@@ -2075,7 +2076,7 @@ const S={
   promook:{pv:"WELCOME30",ps:"ok",st:{act:"w1",queue:["fri"],wel:W1,extra:["promo"]},r:()=>page()},
   promoinst:{pv:"FREE10",ps:"inst",st:{act:"w1",queue:["fri","promo10"],wel:W1},r:()=>page()},
   curempty:{pf:"EUR",wallets:["USD","EUR"],st:{act:null,queue:[],wel:W0},r:()=>page()},
-  many:{st:{act:null,queue:[],wel:WD},r:()=>page({keys:["fri","ten","slots","gold","long","nowag","wk","rl","mn"],cut:1})},
+  many:{st:{act:null,queue:[],wel:WD},r:()=>page({keys:["fri","ten","slots","long","nowag","wk","rl","mn"],cut:1})},
   terms:{st:{act:"w1",queue:["fri","ten"],wel:W1},r:()=>page(),after:()=>openTerms("w2","")},
   termsmin:{st:{act:"w1",queue:["fri","ten"],wel:W1},r:()=>page(),after:()=>openTerms("ten","")},
   cancel:{st:{act:"w1",queue:["fri","ten"],wel:W1},r:()=>page(),after:()=>openCancel("w1")},
