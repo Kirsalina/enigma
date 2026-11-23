@@ -1602,6 +1602,10 @@ button.ava{border:0;cursor:pointer;font:inherit;font-weight:700}
 /* 23.11 17:47: кнопки и карточки выпадашек непрозрачные, как на сайте (фикс аудита: общая заливка кнопок их перекрыла) */
 .drw .dlg-ft .btn.s,.drw .dlg-ft .btn.s:not(:hover),.drw button.dcard,.drw .dcard{background:#1B1922!important}
 @media (hover:hover){.drw .dlg-ft .btn.s:hover,.drw button.dcard:hover{background:#221F2B!important}}
+
+/* 23.11 Вывод: предупреждение об отмене бонуса над кнопкой */
+.owarn{display:flex;gap:8px;align-items:flex-start;margin:12px 0 16px;font-size:13px;line-height:20px;color:var(--red,#F28D92)}
+.owarn svg{flex:none;width:16px;height:16px;margin-top:2px}
 </style>
 </head>
 <body>
@@ -1636,13 +1640,14 @@ button.ava{border:0;cursor:pointer;font:inherit;font-weight:700}
     <button data-s="cashpick">19. Пришёл по «Получить»</button>
     <button data-s="cashmin">20. Суммы не хватает на бонусы</button>
     <button data-s="cashnone">21. Нет бонусов в валюте</button>
+    <button data-s="cashout">22. Вывод при активном бонусе</button>
     <small>Регистрация</small>
-    <button data-s="reg">22. Выбор бонуса</button>
+    <button data-s="reg">23. Выбор бонуса</button>
     <small>История и уведомления</small>
-    <button data-s="hist">23. История</button>
-    <button data-s="histempty">24. История пустая</button>
+    <button data-s="hist">24. История</button>
+    <button data-s="histempty">25. История пустая</button>
     <small>Система</small>
-    <button data-s="core">25. Ядро бонуса</button>
+    <button data-s="core">26. Ядро бонуса</button>
   </nav>
   <div class="stage"><div class="frame" id="frame" data-w="1440"></div></div>
 </div>
@@ -1677,7 +1682,7 @@ const TOP=LEVELS.length-1, ME={level:3}, TO={3:[2100,72],4:[12400,38],8:[486000,
 /* Шаблоны бонусов: только поля админки и ТЗ. Суммы в USD, валюта примера пересчитывает их для показа */
 const B={
   w1:{curs:["USD","RUB","USDT","BTC"],name:"Приветственный: 1-й депозит",type:"pct",val:100,cap:200,min:10,mult:20,days:7,art:"chest",depNo:1},
-  w2:{curs:["USD","RUB","USDT","BTC"],name:"Приветственный: 2-й депозит",type:"pct",val:50,cap:150,min:20,mult:15,days:7,art:"chest",until:"31 декабря",depNo:2,limit:1,cats:[["Слоты",100],["Dice",90],["Live dealer",10]],others:0,maxBet:5,maxWin:5000,desc:"Подарок на второе пополнение."},
+  w2:{curs:["USD","RUB","USDT","BTC"],name:"Приветственный: 2-й депозит",type:"pct",val:50,cap:150,min:20,mult:15,days:7,art:"chest",until:"31 декабря",depNo:2,limit:1,cats:[["Слоты",100],["Dice",90],["Live dealer",10]],others:0,maxBet:5,maxWin:5000,desc:"Бонус ко второму депозиту."},
   w3:{curs:["USD","RUB","USDT","BTC"],name:"Приветственный: 3-й депозит",type:"pct",val:25,cap:100,min:20,mult:10,days:7,art:"chest",until:"31 декабря",depNo:3},
   fri:{curs:["USD","RUB","USDT","BTC"],name:"Пятничный бонус",type:"fix",val:40,min:30,mult:15,days:7,art:"trophy",until:"22 ноября",limit:3,got:1},
   ten:{curs:["USD","USDT","BTC"],name:"Плюс 10% к депозиту",type:"pct",val:10,cap:100,min:10,mult:3,days:0,art:"chest",until:"7 декабря"},
@@ -1737,7 +1742,7 @@ const fits=b=>!b.lvl||b.lvl.some(([a,c])=>ME.level>=a&&ME.level<=c);
 const amtH=b=>b.type==="fs"?`<span class="n">${b.val}${NB}FS</span>`:b.type==="fix"?mh(b.val,"+"):`<span class="n">${pct(b.val)}</span>`;
 const cap=(b,bare)=>{const v=bare?num(b.cap):m(b.cap);return b.type==="pack"?`до ${v} и ${b.fs} фриспинов`:b.type==="pct"?`до ${v}`:""};
 const offer=b=>`<div class="of"><b data-f="Сумма или %">${amtH(b)}</b><span data-f="Лимит бонуса">${cap(b)}</span></div>`;
-const wag=b=>b.mult?`×${b.mult}`:"нет";
+const wag=b=>b.mult?`×${b.mult}`:"не нужен";
 const give=(b,A)=>b.min&&A<b.min?null:b.type==="fix"?b.val:Math.min(A*b.val/100,b.cap);
 const art=b=>b.art?`<img class="art ${["gold","ruby"].includes(b.art)?"club":""}" src="${ASSET[b.art]||ART+b.art+".webp"}" alt="">`:"";
 const rows=b=>`<div class="rows">${b.min?`<div class="row"><span>Депозит</span><b data-f="Мин. депозит">от ${m(b.min)}</b></div>`:""}<div class="row"><span>Вейджер</span><b data-f="Множитель отыгрыша">${wag(b)}</b></div></div>`;
@@ -1749,7 +1754,7 @@ function label(b,locked,guest){
   if(b.promo) return `<span class="chip2 lv" data-f="Получен по промокоду">Промокод</span>`;
   if(b.lvl) return `<span class="chip2 lv" data-f="Уровни (новое)">${lvlText(b.lvl)}</span>`;
   if(b.depNo) return `<span class="chip2" data-f="Номер депозита (новое)">${b.depNo}-й депозит</span>`;
-  if(b.until) return `<span class="chip2" data-f="Период действия: конец">до ${b.until}</span>`;
+  if(b.until) return `<span class="chip2" data-f="Период действия: конец">Взять до ${b.until}</span>`;
   return "";
 }
 function card(b,o={}){
@@ -1768,7 +1773,7 @@ function card(b,o={}){
 }
 /* Промокод: одно поле на странице бонусов и в кассе. Ошибки — одной строкой под полем */
 let PROMO={v:"",st:""};
-const PROMO_MSG={bad:"Не действует",exp:"Не действует",used:"Не действует",lvl:"Не действует",cur:"Не действует",ok:"Активирован",inst:"Активирован"};
+const PROMO_MSG={bad:"Не действует",exp:"Не действует",used:"Не действует",lvl:"Не действует",cur:"Не действует",ok:"Код принят",inst:"Код принят"};
 const promoBox=(where="page")=>{const ok=PROMO.st==="ok"||PROMO.st==="inst",err=PROMO.st&&!ok;
   return `<div class="${where==="dlg"?"pw-d":"pw"} ${err?"err":""} ${ok?"good":""} ${where}"><div class="promo2 ${err?"err":""} ${ok?"good":""} ${where}" data-f="Промокод (новое поле админки: код → шаблон бонуса)">
   ${where==="dlg"?"":`<div class="pstub">${ASSET.promocode?`<img class="art" src="${ASSET.promocode}" alt="">`:""}</div>`}
@@ -1861,7 +1866,7 @@ let NF="b";
 const ntf=()=>{const list=NT.filter(r=>NF==="all"||r[0]===NF);return `<div class="ntf" id="ntf">
   <div class="fchips">${[["all",I.list,"Все"],["m",I.wallet,"Деньги"],["b",I.gift,"Бонусы"]].map(([k,ic,t])=>`<button class="fchip ${NF===k?"on":""}" onclick="NF='${k}';document.getElementById('ntf').outerHTML=ntf();placeNtf()">${ic}${t}</button>`).join("")}<button class="readall" onclick="document.querySelector('#frame .bell i')?.remove()">Прочитать всё</button></div>
   <div class="nlist">${list.length?list.map(([_,c,ic,t,n,a,ac,sg,d])=>`<div class="nitem"><span class="nico ${c}">${ic}</span><div><b>${t}</b><small data-f="Название бонуса">${n}</small></div><em class="${ac}" data-f="Сумма бонуса">${sg}${m(a)}<small data-f="Время события">${d}</small></em></div>`).join(""):`<div class="empty">${I.bell}Здесь пока пусто</div>`}</div></div>`};
-const HIST=[["Бонус без вейджера","19 ноября","Отыгран","g",5,"+"],["Пятничный бонус","18 ноября","Отыгран","g",40,"+"],["Бонус выходного дня","17 ноября","Отменён","",25,""],["Бонус на слоты","15 ноября","Истёк","",15,""],["Приветственный: 1-й депозит","10 ноября","Отыгран","g",100,"+"]];
+const HIST=[["Бонус без вейджера","19 ноября","Отыгран","g",5,"+"],["Пятничный бонус","18 ноября","Отыгран","g",40,"+"],["Бонус выходного дня","17 ноября","Отменён","",25,""],["Плюс 10% к депозиту","16 ноября","Проигран","",10,""],["Бонус на слоты","15 ноября","Истёк","",15,""],["Приветственный: 1-й депозит","10 ноября","Отыгран","g",100,"+"]];
 const histRow=([n,d,s,c,a,sg])=>`<div class="hrow"><div><b data-f="Название">${n}</b><small data-f="Дата смены статуса">${d}</small></div><div class="r"><span class="a ${c}" data-f="Сумма бонуса">${sg}${m(a)}</span><span class="st ${c}" data-f="Статус бонуса игрока">${s}</span></div></div>`;
 const hist=e=>`<div class="panel hist">${e?`<div class="empty">${I.hist}Бонусов пока нет</div>`:HIST.map(histRow).join("")}</div>`;
 
@@ -1878,12 +1883,12 @@ const site=(inner,o={})=>{const tab=o.tab||"Бонусы";return `${header(o)}
   ${o.ntf?ntf():""}${dlgBg}`};
 /* Вопросы и ответы: тексты живого сайта */
 /* «Как работает бонус»: компонент живого сайта, 4 шага. Ниже вопросы */
-const HOW=[["step1","Выбираете","Любой бонус здесь или в кассе"],["step2","Пополняете","Бонус зачисляется вместе с депозитом"],["step3","Отыгрываете","Играйте, и прогресс растёт с каждой ставкой"],["step4","Получаете","Бонус становится реальными деньгами"]];
+const HOW=[["step1","Выбираете","Любой бонус здесь или в кассе"],["step2","Пополняете","Бонус зачисляется вместе с депозитом"],["step3","Отыгрываете","Ставки в играх из условий двигают прогресс"],["step4","Получаете","Бонус переходит на основной баланс"]];
 const FAQ=()=>[["Что такое вейджер?",`Сколько нужно поставить, чтобы бонус стал обычными деньгами. Считается сумма ставок, выиграли вы или проиграли, неважно. Бонус ${m(100)} с вейджером ×15: ставки на ${m(1500)} в играх из условий.`],
   ["Какие игры идут в отыгрыш?","У каждого бонуса свой список. Он в условиях бонуса: кнопка со значком i."],
-  ["Можно взять несколько бонусов?","Да. Отыгрывается один, следующие начинаются сами, по очереди. Срок каждого идёт с момента получения."],
-  ["Сколько времени на отыгрыш?","Срок указан в условиях бонуса. Ваши деньги остаются на балансе в любом случае."]];
-const faq=()=>`<h2 class="sh">Как работает бонус</h2><p class="shsub">Четыре шага до реальных денег</p><div class="how2">${HOW.map(([a,t,d],i)=>`<div class="hs"><div class="ht"><span class="hn">${i+1}</span><img class="art" src="${ASSET[a]}" alt=""></div><div class="hb"><b>${t}</b><span>${d}</span></div></div>`).join("")}</div>
+  ["Можно взять несколько бонусов?","Да. Отыгрывается один, следующие начинаются сами, по очереди. Срок каждого идёт с момента получения, даже пока бонус ждёт в очереди."],
+  ["Сколько времени на отыгрыш?","Срок указан в условиях бонуса."]];
+const faq=()=>`<h2 class="sh">Как работает бонус</h2><p class="shsub">Отыграли, и деньги ваши</p><div class="how2">${HOW.map(([a,t,d],i)=>`<div class="hs"><div class="ht"><span class="hn">${i+1}</span><img class="art" src="${ASSET[a]}" alt=""></div><div class="hb"><b>${t}</b><span>${d}</span></div></div>`).join("")}</div>
   <h2 class="sh fqh"><svg class="i" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M6.3 6.3a1.8 1.8 0 013.4.7c0 1.2-1.7 1.5-1.7 2.5M8 11.4v.1"/></svg>Частые вопросы</h2><div class="faq">${FAQ().map(([q,a])=>`<button class="q" aria-expanded="false" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')!=='true')">${q}<i>+</i></button><div class="a">${a}</div>`).join("")}</div>`;
 const ALL=["fri","ten","slots"]; /* 23.11: бонус уровня видят только игроки этого уровня. Игрок в примере Gold, новый игрок и гость без уровня. Иконка обычная, по типу бонуса */
 /* Промокод: первым, если нет активного бонуса и очереди; иначе сразу после них, перед пакетом */
@@ -1925,13 +1930,13 @@ function refreshCash(){
   fitAll();
 }
 /* Согласие с условиями стоит у кнопки оплаты и только когда выбран бонус */
-const consent=(verb="Пополняя")=>B[CASH.sel]&&give(B[CASH.sel],CASH.A)!==null?`<p class="consent">${verb} с бонусом, вы принимаете <a onclick="openTerms('${CASH.sel}','view')">условия бонуса</a> и <a>Правила бонусной программы</a></p>`:"";
+const consent=(verb="Пополняя")=>B[CASH.sel]&&give(B[CASH.sel],CASH.A)!==null?`<p class="consent">${verb} с бонусом, вы принимаете <a onclick="openTerms('${CASH.sel}','view')">условия акции</a> и <a>Условия использования сайта</a></p>`:"";
 /* Суммы не хватает на выбранный бонус: кнопка не платит, а поднимает сумму. Заплатить и не получить бонус нельзя */
 const sumBlock=()=>{const b=B[CASH.sel];const g=b?give(b,CASH.A):undefined;return `<div class="sum" id="sum">
   <div class="panel pay"><span class="eyebrow" style="color:var(--muted)">К оплате</span><strong>${m(CASH.A)}</strong>
     <button class="btn p full lg">Пополнить на ${m(CASH.A)}</button></div>
   <div class="panel srows"><div class="kv"><span>Депозит</span><b>${m(CASH.A)}</b></div><div class="kv"><span>Комиссия</span><b>${m(0)}</b></div>
-    ${g===null?`<div class="kv"><span>Бонус</span><b class="bad">Не начислится: депозит меньше ${m(b.min)}</b></div>`:g?`<div class="kv"><span>Бонус</span><b data-f="Сумма бонуса по выбранному предложению">+${m(g)}</b></div>${b.mult?`<div class="kv"><span>Отыграть</span><b data-f="Сумма бонуса × вейджер">${m(g*b.mult)}</b></div>`:""}`:""}
+    ${g===null?`<div class="kv"><span>Бонус</span><b class="bad">Не начислится, нужен депозит от ${m(b.min)}</b></div>`:g?`<div class="kv"><span>Бонус</span><b data-f="Сумма бонуса по выбранному предложению">+${m(g)}</b></div>${b.mult?`<div class="kv"><span>Отыгрыш</span><b data-f="Сумма бонуса × вейджер">${m(g*b.mult)}</b></div>`:""}`:""}
     <div class="kv tot"><span>На баланс</span><b>${m(CASH.A)}</b></div></div></div>`};
 /* Активный бонус в кассе: тот же блок, что на странице бонусов, только компактный */
 const cashActive=()=>{if(!ST.act)return"";const k=ST.act,a=PB[k],p=Math.min(100,Math.round(a.done/a.need*100));return `<div class="panel acc tb cst2" data-f="Активный бонус игрока (тот же, что в Rewards)">
@@ -1944,8 +1949,8 @@ const ARR={dep:'<svg class="i" viewBox="0 0 16 16"><path d="M12 4L4 12M4 6.5V12h
 const COIN={BTC:["#F7931A","₿","Bitcoin"],ETH:["#627EEA","Ξ","Ethereum"],TRX:["#EF0027","T",""],USDT:["#26A17B","₮","Tether"],XRP:["#23292F","✕",""],SOL:["#14F195","≡",""],USD:["#3A2C5C","$","Доллар"],EUR:["#3A2C5C","€","Евро"],KZT:["#3A2C5C","₸","Тенге"],RUB:["#3A2C5C","₽","Рубль"]};
 const coin=c=>`<i class="coin" style="--c:${COIN[c][0]}">${COIN[c][1]}</i>`;
 const curCard=(c,on,bal,extra="")=>`<div class="curc2 ${on?"on":""}"><div class="h">${coin(c)}<div><b>${c}</b>${COIN[c][2]?`<span>${COIN[c][2]}</span>`:""}</div>${on?`<span class="ck">${I.tick}</span>`:""}</div><span class="l">Баланс</span><em>${bal}</em>${extra}</div>`;
-const cashHero=()=>`<div class="rhero ch" style="margin-top:16px"><div class="pic" style="background-image:url(${ASSET.cashhero})"></div><div class="in"><div class="eyebrow">Кошелёк</div><h1>Касса</h1><p class="sub">Пополнение и вывод фиатом или криптовалютой</p></div>
-  <div class="tabs"><span class="on">${ARR.dep}Пополнение</span><span>${ARR.out}Вывод</span><span>${ARR.leaf}Стейкинг</span><span>${I.hist}История</span></div></div>`;
+const cashHero=(t="dep")=>`<div class="rhero ch" style="margin-top:16px"><div class="pic" style="background-image:url(${ASSET.cashhero})"></div><div class="in"><div class="eyebrow">Кошелёк</div><h1>Касса</h1><p class="sub">Пополнение и вывод фиатом или криптовалютой</p></div>
+  <div class="tabs"><span class="${t==="dep"?"on":""}" ${t!=="dep"?`onclick="go('cash')" style="cursor:pointer"`:""}>${ARR.dep}Пополнение</span><span class="${t==="out"?"on":""}" ${t!=="out"?`onclick="go('cashout')" style="cursor:pointer"`:""}>${ARR.out}Вывод</span><span>${ARR.leaf}Стейкинг</span><span>${I.hist}История</span></div></div>`;
 const cashSeg=mm=>`<span class="segm"><span class="${mm==="crypto"?"on":""}">${ARR.btc}Криптовалюта</span><span class="${mm==="fiat"?"on":""}">${ARR.card}Фиат</span></span>`;
 let CO={};
 function cashier(o){
@@ -1968,21 +1973,35 @@ function cashier(o){
       ${curCard(CUR,1,ST.zero?m(0):m(215))}
       ${curCard("EUR",0,"0")}${curCard("KZT",0,"0")}${curCard(CUR==="RUB"?"USD":"RUB",0,"0")}</div></div>
     <div class="step"><h3><span>2</span>Сумма</h3><div class="field" id="afield">${m(CASH.A)}</div><div class="amts" id="amts">${[10,20,50,100,200,500].map(a=>`<button data-a="${a}" class="${a===CASH.A?"on":""}" onclick="setAmt(${a})">${m(a)}</button>`).join("")}</div></div>
-    <div class="step"><h3><span>3</span>Способ оплаты</h3><div class="stub">Шаг без изменений в этом пакете.</div></div>
+    <div class="step"><h3><span>3</span>Способ оплаты</h3><div class="stub">Как на сайте сейчас</div></div>
     <div class="step"><h3><span>4</span>Бонус</h3>${bonusStep}</div>
     <div class="step"><h3><span>5</span>Итог</h3>${sumBlock()}</div>
   </div>${side}</div>${dlgBg}`;
 }
 
+/* Вывод при активном бонусе. Логика (ждёт подтверждения бэка): вывести можно, активный бонус отменяется, очередь остаётся. Предупреждение в итоге, рядом с кнопкой */
+const cashOut=()=>{const A=50,bal=ST.zero?0:215,k=ST.act,a=k&&PB[k];
+  const nav=header({nav:["by Enigma","Казино","Рилсы","Чат","Касса","Бонусы"],navOn:"Касса"});
+  const side=`<aside class="ops"><h3>Последние операции<a>Вся история</a></h3><div class="box">Операций пока нет</div></aside>`;
+  const kv=(l,v,c="",f="")=>`<div class="kv"><span>${l}</span><b class="${c}" ${f?`data-f="${f}"`:""}>${v}</b></div>`;
+  return `${nav}<div class="cash"><div class="cash-main">${cashHero("out")}
+    <div class="step"><h3><span>1</span>Откуда вывести${cashSeg("fiat")}</h3><div class="cur2">${curCard(CUR,1,m(bal))}${curCard("EUR",0,"0")}${curCard("KZT",0,"0")}${curCard(CUR==="RUB"?"USD":"RUB",0,"0")}</div></div>
+    <div class="step"><h3><span>2</span>Сумма</h3><div class="field">${m(A)}</div></div>
+    <div class="step"><h3><span>3</span>Способ вывода</h3><div class="stub">Как на сайте сейчас</div></div>
+    <div class="step"><h3><span>4</span>Итог</h3><div class="sum">
+      <div class="panel pay"><span class="eyebrow" style="color:var(--muted)">К выводу</span><strong>${m(A)}</strong>${a?`<p class="owarn" role="note" data-f="Активный бонус игрока: при выводе отменяется">${I.info}Активный бонус «${B[k].name}» отменится</p>`:""}<button class="btn p full lg">Вывести ${m(A)}</button></div>
+      <div class="panel srows">${kv("Вывод",m(A))}${kv("Комиссия",m(0))}${a?kv("Бонусный баланс","−"+m(a.amt))+(a.done?kv("Отыграно",`${m(a.done)} из ${m(a.need)}`):"")+(ST.queue.length?kv("Бонусы в очереди","Останутся"):""):""}
+      <div class="kv tot"><span>Останется на балансе</span><b>${m(bal-A)}</b></div></div></div></div>
+  </div>${side}</div>${dlgBg}`};
 let REG="none";
 const setReg=v=>{REG=v;const e=document.getElementById("ropts");if(e)e.outerHTML=regOpts();fitAll()};
 const regOpts=()=>`<div class="tiles" id="ropts">${tile("none","setReg",REG)}${tile("reg","setReg",REG)}</div>`;
 const reg=()=>`${header({guest:1,navOn:""})}
   <div class="reg"><div><span class="segm"><span class="on">Регистрация</span><span>Вход</span></span>
-    <h1>Пара минут,<br>и вы с нами</h1>
+    <h1>Минута,<br>и вы в игре</h1>
     <div class="fld"><label>Почта или телефон</label><div>you@example.com</div><label>Пароль</label><div>Не меньше 8 символов</div><label>Валюта аккаунта</label><div class="v">${CUR}</div><label>Промокод, если есть</label><div>Введите промокод</div></div>
     <span class="lbl">Бонус</span>${regOpts()}
-    <div class="check"><i></i><span>Мне есть 18 лет, я принимаю <a>условия</a>, <a>политику конфиденциальности</a> и <a>Правила бонусной программы</a></span></div>
+    <div class="check"><i></i><span>Мне есть 18 лет, я принимаю <a>Условия использования сайта</a> и <a>политику конфиденциальности</a></span></div>
     <button class="btn p full lg glow">Создать аккаунт</button></div>
     <div class="reg-art"><img class="art" src="${ASSET.gift}" alt=""></div>
   </div>${dlgBg}`;
@@ -1995,10 +2014,10 @@ function termGroups(b,own){
   if(b.min) get.push(kv("Депозит","от "+m(b.min),"Мин. депозит (по валюте)"));
   if(b.depNo) get.push(kv("Какой депозит",b.depNo+"-й","Номер депозита (новое)"));
   if(b.lvl) get.push(kv("Уровень Клуба",lvlText(b.lvl),"Уровни (новое)"));
-  if(b.until&&!own) get.push(kv("Успейте до",b.until,"Период действия: конец"));
+  if(b.until&&!own) get.push(kv("Взять до",b.until,"Период действия: конец"));
   if(b.limit&&!own) get.push(kv("Доступно",b.got?`${pl(b.limit-b.got,"раз","раза","раз")} из ${b.limit}`:pl(b.limit,"раз","раза","раз"),"Лимит на игрока (новое) и сколько уже взято"));
   if(get.length) g.push(["Как получить",get.join("")]);
-  const w=[kv("Вейджер",b.mult?`×${b.mult}`:"нет","Множитель отыгрыша")];
+  const w=[kv("Вейджер",b.mult?`×${b.mult}`:"не нужен","Множитель отыгрыша")];
   if(b.mult&&b.type==="fix") w.push(kv("Сумма ставок",m(b.val*b.mult),"Сумма бонуса × вейджер"));
   if(b.mult&&own) w.push(kv("Отыграно",`${m(own.done)} из ${m(own.need)}`,"Отыграно / нужно"));
   if(b.mult&&own&&own.dl) w.push(kv("Отыграть до",own.dl,"Срок бонуса игрока (снимок при получении)"));
@@ -2006,9 +2025,9 @@ function termGroups(b,own){
   g.push(["Как отыграть",w.join("")]);
   if(b.mult){const cats=b.cats?[...b.cats,["Остальные игры",b.others?100:0]]:[["Все игры",100]];
     g.push(["Какие ставки идут в отыгрыш",`<div class="gh"><span>Игра</span><span>Идёт в отыгрыш</span></div>`+cats.map(([n,p])=>`<div class="gm" data-f="Зачёт по категориям (новое)"><div class="l"><span>${n}</span><b class="${p?"":"z"}">${p?p+NB+"%":"не идут"}</b></div>${p?`<div class="bar"><i style="width:${p}%"></i></div>`:""}</div>`).join("")]);}
-  const pay=[]; if(b.maxBet) pay.push(kv("Ставка","до "+m(b.maxBet),"Макс. ставка (новое): ставка больше засчитывается как эта сумма"));
-  if(b.maxWin) pay.push(kv("Выигрыш","до "+m(b.maxWin),"Макс. выигрыш (новое), смысл: B22"));
-  if(pay.length) g.push(["Ставка и выигрыш",pay.join("")]);
+  const pay=[]; if(b.maxBet) pay.push(kv("Засчитывается со ставки","до "+m(b.maxBet),"Макс. ставка (новое): ставка больше засчитывается как эта сумма"));
+  if(b.maxWin) pay.push(kv("Вывод с бонуса","до "+m(b.maxWin),"Макс. выигрыш (новое): максимум к выводу с бонуса"));
+  if(pay.length) g.push(["Ставка и вывод",pay.join("")]);
   return g.map(([t,h])=>`<div class="grp"><span class="eyebrow">${t}</span><div class="box">${h}</div></div>`).join("");
 }
 /* Дровер как на сайте (панель «Бонусы» у колокольчика): справа сверху, заголовок отдельной плашкой, ниже содержимое. На телефоне снизу */
@@ -2040,7 +2059,7 @@ function openTerms(k,ctx){
     :!take?close:close+`<button class="btn p" onclick="closeDlg();${ctx==="guest"?(k==="reg"?"go('reg','reg')":"go('reg')"):`getBonus('${k}')`}">Получить</button>`;
   showDlg(`<div class="dlg terms" role="dialog" aria-modal="true" aria-labelledby="dt"><div class="scroll">
     <div class="dcard thc">${art(b)}<div class="tx"><h3 id="dt" data-f="Название">${b.name}</h3><div class="am">${own?`<b data-fit data-f="Сумма бонуса игрока">${mh(PB[k].amt)}</b>`:`<b data-fit>${amtH(b)}</b>${cap(b)?`<span>${cap(b)}</span>`:""}`}</div></div></div>
-    <div class="dlg-bd">${termGroups(b,ctx==="view"&&(ST.act===k||ST.queue.includes(k))?PB[k]:null)}${b.desc?`<div class="dcard tnote"><p class="desc2" data-f="Описание (поле админки)">${b.desc}</p></div>`:""}${take?`<p class="foot" data-f="Системная строка, не поле бонуса">Получая бонус, вы подтверждаете, что ознакомились с его условиями и Правилами бонусной программы и принимаете их. Условия бонуса могут быть изменены или дополнены. В случаях, предусмотренных Правилами, бонус и выигрыш, полученный с его использованием, могут быть скорректированы или аннулированы. Расчёты ведутся по данным казино.</p>`:""}</div></div>
+    <div class="dlg-bd">${termGroups(b,ctx==="view"&&(ST.act===k||ST.queue.includes(k))?PB[k]:null)}${b.desc?`<div class="dcard tnote"><p class="desc2" data-f="Описание (поле админки)">${b.desc}</p></div>`:""}${take?`<p class="foot" data-f="Системная строка, не поле бонуса">Получая бонус, вы принимаете условия акции и Условия использования сайта, в том числе правила начисления, отыгрыша, ограничений и отмены бонусов.</p>`:""}</div></div>
     <div class="dlg-ft" ${take?"":`style="grid-template-columns:1fr"`}>${foot}</div></div>`,".dlg-ft .btn.s");
 }
 /* Отмена: строки последствий, как группа в условиях. Без «сгорит» и без красной суммы */
@@ -2148,6 +2167,7 @@ const S={
   termsmin:{st:{act:"w1",queue:["fri","ten"],wel:W1},r:()=>page(),after:()=>openTerms("ten","")},
   cancel:{st:{act:"w1",queue:["fri","ten"],wel:W1},r:()=>page(),after:()=>openCancel("w1")},
   cash:{st:{act:"w1",queue:["fri","ten"],wel:W1},r:a=>cashier(a||{})},
+  cashout:{st:{act:"w1",queue:["fri","ten"],wel:W1},r:()=>cashOut()},
   cashpick:{st:{act:null,queue:[],wel:WD},r:a=>cashier(typeof a==="string"?{sel:a}:a||{sel:"w2"})},
   cashmin:{st:{act:null,queue:[],wel:WD},r:a=>cashier(a||{A:10,sel:"fri",keepA:1})},
   cashlow:{st:{act:null,queue:[],wel:WD},r:a=>cashier(a||{A:10,sel:"none",keepA:1})},
