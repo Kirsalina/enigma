@@ -1781,7 +1781,7 @@ const B={
   lvr:{curs:["USD","RUB","USDT","BTC"],name:"Релоад для Silver и Gold",type:"fix",val:25,min:20,mult:10,days:5,art:"trophy",lvl:[[3,4]]},
   lvb:{curs:["USD","RUB","USDT","BTC"],name:"Еженедельный релоад",type:"pct",val:15,cap:200,min:20,mult:10,days:5,art:"chest",lvl:[[0,7]]},
   lvo:{curs:["USD","RUB","USDT","BTC"],name:"Бонус только для Gold",type:"fix",val:75,min:50,mult:8,days:5,art:"trophy",lvl:[[4,4]]},
-  ruby:{curs:["USD","USDT","RUB"],name:"Ruby: двойной депозит",type:"pct",val:100,cap:2000,min:100,mult:10,days:0,art:"ruby",lvl:[[8,9]],maxWin:10000},
+  ruby:{curs:["USD","USDT","RUB"],name:"Ruby: двойной депозит",type:"pct",val:100,cap:2000,min:100,mult:10,days:0,art:"chest",lvl:[[8,9]],maxWin:10000},
   mid:{curs:["USD","RUB","USDT","BTC"],name:"Бонус для середины Клуба",type:"fix",val:25,min:20,mult:10,days:3,art:"trophy",lvl:[[3,6]]},
   promo:{curs:["USD","RUB","USDT","BTC"],name:"Бонус по промокоду",type:"pct",val:30,cap:300,min:20,mult:10,days:5,art:"promocode",promo:1},
   promo10:{curs:["USD","RUB","USDT","BTC"],name:"Промокод: $10 без депозита",type:"fix",val:10,min:0,mult:20,days:3,art:"promocode",promo:1},
@@ -2093,7 +2093,7 @@ const cashOut=()=>{const A=50,bal=ST.zero?0:215,k=ST.act,a=k&&PB[k];
    Доступные игроку: обычный купон с «Получить». Недоступные: информационная карточка с прогрессом до уровня (данные из сервиса Клуба) */
 /* ── Клуб (как на сайте: шкала уровней → панель «Что даёт» → бонусы, которые откроются). 23.11 ──
    Пороги и награды из Клуба. Игрок Silver, сумма ставок $15 700 (38 % до Gold, как в профиле).
-   Клик по уровню выбирает его. Блок бонусов только у уровней выше текущего: бонусы, которые на нём откроются (уже доступные в общем списке) */
+   Клик по уровню выбирает его (панель «Что даёт»). Ниже один блок «Бонусы следующих уровней» (уже доступные в общем списке) */
 const CLV=[[1,1500,5],[2,3500,10],[3,10000,25],[4,25000,50],[5,50000,100],[6,90000,200],[7,150000,400],[8,300000,800],[9,500000,0]];
 const LVC=["#8E929C","#B9784A","#C9CCD6","#D9B44C","#DCDDEA","#8B5CF6","#3FBF7F","#E0505F","#6B5B95"];
 const CTOTAL=15700; let CSEL=4;
@@ -2107,8 +2107,11 @@ const clubPage=()=>{const me=ME.level,sel=CSEL,[,from,rw]=CLV[sel-1],left=Math.m
     <div class="lvp-r"><span class="eyebrow">Уровень ${sel}</span><h3>Что даёт ${LEVELS[sel]}</h3>${prog}
       <div class="lvperk">${I.tick}<span>Рейкбэк и бусты по настройкам уровня</span></div>
       <div class="lvperk off">${I.lock}<span>Персональный бонус<small>Не на этом уровне</small></span></div></div></section>`;
-  const list=sel>me?["lvr","lvb","gold","lvo","ruby"].map(k=>B[k]).filter(b=>!fits(b)&&b.lvl.some(([a,c])=>sel>=a&&sel<=c)):[];
-  const bon=list.length?`<section class="clubb"><h2 class="sh">Откроются на ${LEVELS[sel]}</h2>${grid(list,{cut:0})}</section>`:"";
+  /* Вариант B (23.11, по словам Серёжи): один блок на весь Клуб, от выбранного уровня не зависит.
+     Все бонусы, у которых нижняя граница условия выше уровня игрока, по порядку уровней. На карточке плашка «Откроется на …» */
+  const lo=b=>Math.min(...b.lvl.map(([a])=>a).filter(a=>a>me));
+  const list=["lvr","lvb","gold","lvo","ruby"].map(k=>B[k]).filter(b=>!fits(b)&&b.lvl.some(([a])=>a>me)).sort((a,b)=>lo(a)-lo(b));
+  const bon=list.length?`<section class="clubb"><h2 class="sh">Бонусы следующих уровней</h2>${grid(list)}</section>`:"";
   return site(`<section class="clubtop">${track}</section>${panel}${bon}`,{tab:"Клуб",faq:false})};
 let REG="none";
 const setReg=v=>{REG=v;const e=document.getElementById("ropts");if(e)e.outerHTML=regOpts();fitAll()};
