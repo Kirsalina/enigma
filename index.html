@@ -1695,8 +1695,11 @@ button.ava{border:0;cursor:pointer;font:inherit;font-weight:700}
     <button data-s="histempty">25. История пустая</button>
     <small>Система</small>
     <button data-s="core">26. Ядро бонуса</button>
-    <small>Клуб</small>
-    <button data-s="club">27. Бонусы уровня в Клубе (игрок Silver)</button>
+    <small>Условие по уровню</small>
+    <button data-s="club">27. Клуб: бонусы следующего уровня (игрок Silver)</button>
+    <button data-s="lvsilver">28. Silver: видит только доступные ему</button>
+    <button data-s="lvplat">29. Platinum: «от Silver до Gold» и «Только Gold» пропали</button>
+    <button data-s="lvplatact">30. Platinum: бонус прошлого уровня отыгрывается дальше</button>
   </nav>
   <div class="stage"><div class="frame" id="frame" data-w="1440"></div></div>
 </div>
@@ -1894,7 +1897,7 @@ const welcome=(o={},head)=>{const ks=welLeft();return `${head||`<div class="sech
   <div class="grid" data-z="1">${ks.map(([k,i])=>{const [cls,act,view]=stepState(k,i);return card(B[k],{cls,act,view,guest:o.guest})}).join("")}</div>`};
 
 /* ── Бонусы игрока. Отмена реально убирает бонус, следующий встаёт на место ── */
-const PB0={w1:{amt:100,done:840,need:2000,dl:"25 ноября"},fri:{amt:40,done:0,need:600,dl:"24 ноября"},ten:{amt:10,done:0,need:30,dl:null},reg:{amt:50,done:0,need:100,dl:null}};
+const PB0={w1:{amt:100,done:840,need:2000,dl:"25 ноября"},fri:{amt:40,done:0,need:600,dl:"24 ноября"},ten:{amt:10,done:0,need:30,dl:null},reg:{amt:50,done:0,need:100,dl:null},lvr:{amt:25,done:90,need:250,dl:"28 ноября"}};
 /* Бонус игрока: если нет в примере, берём из шаблона */
 const PB=new Proxy(PB0,{get:(t,k)=>t[k]||(B[k]?{amt:B[k].type==="fix"?B[k].val:Math.round((B[k].cap||100)/2),done:0,need:(B[k].type==="fix"?B[k].val:50)*(B[k].mult||1),dl:B[k].days?"30 ноября":null}:undefined)});
 let ST={act:"w1",queue:["fri","ten"],gone:[],wel:["done","next","wait"],zero:false,soon:false};
@@ -2239,6 +2242,10 @@ const S={
   hist:{st:{act:"w1",queue:["fri","ten"],wel:W1},r:()=>site(hist(),{tab:"История",faq:false})},
   histempty:{st:{act:null,queue:[],wel:W0},r:()=>site(hist(1),{tab:"История",faq:false})},
   ntf:{st:{act:"ten",queue:[],wel:WD},r:()=>page({ntf:1,unread:1})},
+  /* Условие по уровню: кейсы. Один набор бонусов, разный уровень игрока */
+  lvsilver:{lvl:3,st:{act:null,queue:[],wel:WD},r:()=>page({keys:["lvr","lvb","gold","lvo","ten"]})},
+  lvplat:{lvl:5,st:{act:null,queue:[],wel:WD},r:()=>page({keys:["lvr","lvb","gold","lvo","ten"]})},
+  lvplatact:{lvl:5,st:{act:"lvr",queue:[],wel:WD},r:()=>page({keys:["lvr","lvb","gold","lvo","ten"]})},
   club:{lvl:3,st:{act:"fri",queue:[],wel:WD},r:()=>clubPage()},
   core:{lvl:4,st:{act:null,queue:[],wel:WD},r:()=>coreSheet()}
 };
