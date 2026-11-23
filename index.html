@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="hi">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1691,6 +1691,26 @@ button.ava{border:0;cursor:pointer;font:inherit;font-weight:700}
 .f390 .lvprog-t{flex-direction:column;gap:2px}
 .lvi .chip2.me{position:static!important;margin-top:6px;transform:none!important}
 .lvi .chip2.me{max-width:none!important;overflow:visible!important;white-space:nowrap}
+
+/* ===== 23.11, 22:20 ИЕРАРХИЯ (переключатель «Стало/Было», класс .hi). Убрать блок = вернуть как было ===== */
+/* 1. Одна главная кнопка на экран. «Получить» на купонах и «Активировать» у промокода вторичные; заливка при наведении.
+      Главная: «Играть» у активного бонуса; если активного нет — «Получить» у первого шага приветственного пакета; в кассе «Пополнить»; в выпадашке «Получить» */
+.hi .bc-act .btn.p:not([disabled]),.hi .promo2 .btn.p{background:var(--fill)!important;color:var(--text)!important;box-shadow:inset 0 0 0 1.5px rgba(150,144,171,.32)!important;filter:none!important}
+.hi .bc-act .btn.p.glow:not([disabled]){box-shadow:inset 0 0 0 1.5px rgba(150,144,171,.32)!important}
+.hi #frame:not(:has(.tb:not(.gtb))) .cw.hot .bc-act .btn.p{background:var(--primary)!important;color:var(--dark)!important;box-shadow:none!important}
+@media (hover:hover){.hi .bc-act .btn.p:not([disabled]):hover,.hi .promo2 .btn.p:hover{background:var(--primary)!important;color:var(--dark)!important;box-shadow:none!important}}
+/* 2. Фиолетовый только для действий и прогресса */
+.hi .of>span{color:var(--muted)!important}
+.hi .chip2.lv{color:var(--text)!important}
+.hi .hn{color:var(--text)!important;box-shadow:inset 0 0 0 1px var(--o)!important}
+/* 3. Уровни блоков. Активный бонус — «моё»: фиолетовый свет и обводка. Купоны ровные, цвет даёт картинка. «Как работает» без карточек */
+.hi .tb:not(.gtb){background:radial-gradient(520px 260px at 0% 0%,rgba(163,132,217,.20),transparent 70%),var(--card)!important;box-shadow:0 0 0 1px rgba(198,171,252,.35)!important}
+.hi .cw .bc-top,.hi .cw.dim .bc-top,.hi .cw.lock .bc-top{background:radial-gradient(160px 120px at 85% 50%,rgba(233,233,237,.06),transparent 70%),var(--grad)!important}
+.hi .hs{background:none!important;box-shadow:none!important;border-radius:0!important}
+.hi .ht{background:radial-gradient(90px 70px at 50% 55%,rgba(233,233,237,.06),transparent 70%)!important;border-radius:16px}
+.hi .how2 .hb{padding-left:0!important;padding-right:0!important}
+.hi .ht::after{display:none!important}
+.hi .f390 .how2 .hb{padding-left:16px!important}
 </style>
 </head>
 <body>
@@ -1698,6 +1718,7 @@ button.ava{border:0;cursor:pointer;font:inherit;font-weight:700}
   <span class="scr"><button id="scrBtn" onclick="document.body.classList.toggle('scr-open')"><b>Экран</b><span id="scrName">1. Отыгрывается + следующие</span><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6l4 4 4-4"/></svg></button></span>
   <span><b>Ширина</b><span class="seg" id="w"><button data-v="1440" class="on">ПК</button><button data-v="820">iPad</button><button data-v="390">Телефон</button><button data-v="1920" hidden>1920</button><button data-v="2560" hidden>2560</button></span></span>
   <span id="curbox"><b>Валюта примера</b><span class="seg" id="cur"><button data-v="USD" class="on">USD</button><button data-v="RUB">RUB</button><button data-v="BTC">BTC</button><button data-v="USDT" hidden>USDT</button></span></span>
+  <span><b>Иерархия</b><span class="seg" id="hiSw"><button data-v="1" class="on">Стало</button><button data-v="0">Было</button></span></span>
   <span hidden><b>Поля админки</b><span class="seg" id="annot"><button data-v="off" class="on">Скрыть</button><button data-v="on">Показать</button></span></span>
 </div>
 <div class="layout">
@@ -2342,6 +2363,9 @@ document.getElementById("cur").onclick=e=>{const b=e.target.closest("button");if
 document.getElementById("annot").onclick=e=>{const b=e.target.closest("button");if(!b)return;document.querySelectorAll("#annot button").forEach(x=>x.classList.toggle("on",x===b));document.body.classList.toggle("annot",b.dataset.v==="on")};
 document.getElementById("states").onclick=e=>{const b=e.target.closest("button");if(b)go(b.dataset.s,undefined,true)};
 go("main",undefined,true);
+
+/* 23.11 Иерархия: «Стало» (класс hi на html) / «Было». Только визуальный слой, логика не меняется */
+document.getElementById("hiSw").onclick=e=>{const b=e.target.closest("button");if(!b)return;document.querySelectorAll("#hiSw button").forEach(x=>x.classList.toggle("on",x===b));document.documentElement.classList.toggle("hi",b.dataset.v==="1");fitAll()};
 
 </script>
 </body>
