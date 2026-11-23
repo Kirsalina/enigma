@@ -1848,7 +1848,7 @@ const ibtn=(k,ctx,sz="sm")=>`<button class="btn s ${sz} sq" aria-label="Усло
 /* Метка: чип в углу купона, как «Первый депозит» на живой карточке */
 function label(b,locked,guest){
   if(b.promo) return `<span class="chip2 lv" data-f="Получен по промокоду">Промокод</span>`;
-  if(b.lvl) return `<span class="chip2 lv" data-f="Условие по уровню (новое)">${ach(b)?I.crown:""}${lvlText(b.lvl)}</span>`;
+  if(b.lvl) return `<span class="chip2 lv" data-f="Условие по уровню (новое)">${lvlText(b.lvl)}</span>`;
   if(b.depNo) return `<span class="chip2" data-f="Номер депозита (новое)">${b.depNo}-й депозит</span>`;
   if(b.until) return `<span class="chip2" data-f="Период действия: конец">Взять до ${b.until}</span>`;
   return "";
