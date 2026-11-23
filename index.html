@@ -1662,7 +1662,7 @@ button.ava{border:0;cursor:pointer;font:inherit;font-weight:700}
     <button data-s="regdone">3. После регистрации с бонусом</button>
     <button data-s="noact">4. Новый игрок</button>
     <button data-s="guest">5. Гость</button>
-    <button data-s="lvgold">6. Игрок Gold: бонус его уровня</button>
+    <button data-s="lvgold">6. Бонусы уровней: все варианты (игрок Gold)</button>
     <button data-s="longq">7. 12 бонусов в очереди</button>
     <button data-s="profile">8. Профиль: активный бонус</button>
     <button data-s="profilenone">9. Профиль: бонуса нет</button>
@@ -1727,6 +1727,9 @@ const B={
   ten:{curs:["USD","USDT","BTC"],name:"Плюс 10% к депозиту",type:"pct",val:10,cap:100,min:10,mult:3,days:0,art:"chest",until:"7 декабря"},
   slots:{curs:["USD","RUB"],name:"Бонус на слоты",type:"fix",val:15,min:20,mult:25,days:3,art:"trophy",cats:[["Слоты",100]],others:0},
   gold:{curs:["USD","RUB","USDT","BTC"],name:"Бонус для Gold",type:"pct",val:30,cap:500,min:50,mult:8,days:0,art:"chest",lvl:[[4,9]]},
+  lvr:{curs:["USD","RUB","USDT","BTC"],name:"Релоад для Silver и Gold",type:"fix",val:25,min:20,mult:10,days:5,art:"trophy",lvl:[[3,4]]},
+  lvb:{curs:["USD","RUB","USDT","BTC"],name:"Еженедельный релоад",type:"pct",val:15,cap:200,min:20,mult:10,days:5,art:"chest",lvl:[[0,7]]},
+  lvo:{curs:["USD","RUB","USDT","BTC"],name:"Бонус только для Gold",type:"fix",val:75,min:50,mult:8,days:5,art:"trophy",lvl:[[4,4]]},
   ruby:{curs:["USD","USDT","RUB"],name:"Ruby: двойной депозит",type:"pct",val:100,cap:2000,min:100,mult:10,days:0,art:"ruby",lvl:[[8,9]],maxWin:10000},
   mid:{curs:["USD","RUB","USDT","BTC"],name:"Бонус для середины Клуба",type:"fix",val:25,min:20,mult:10,days:3,art:"trophy",lvl:[[3,6]]},
   promo:{curs:["USD","RUB","USDT","BTC"],name:"Бонус по промокоду",type:"pct",val:30,cap:300,min:20,mult:10,days:5,art:"promocode",promo:1},
@@ -1776,7 +1779,8 @@ const pct=v=>`+${v}${NB}%`;
 const per=b=>{const h=b.hrs??(b.days||0)*24;return !h?"":h%24?pl(h,"час","часа","часов"):pl(h/24,"день","дня","дней")};
 const pl=(n,a,b,c)=>n+" "+(n%10===1&&n%100!==11?a:n%10>=2&&n%10<=4&&(n%100<10||n%100>=20)?b:c);
 const key=b=>Object.keys(B).find(k=>B[k]===b);
-const lvlText=r=>r.map(([a,b])=>a===b?LEVELS[a]:b===TOP?`${LEVELS[a]} и выше`:a===0?`до ${LEVELS[b]}`:`от ${LEVELS[a]} до ${LEVELS[b]}`).join(", ");
+/* Подпись уровней (23.11): «Только Gold», «Gold и выше», «Emerald и ниже», «от Silver до Gold» */
+const lvlText=r=>r.map(([a,b])=>a===b?`Только ${LEVELS[a]}`:b===TOP?`${LEVELS[a]} и выше`:a===0?`${LEVELS[b]} и ниже`:`от ${LEVELS[a]} до ${LEVELS[b]}`).join(", ");
 const fits=b=>!b.lvl||b.lvl.some(([a,c])=>ME.level>=a&&ME.level<=c);
 const amtH=b=>b.type==="fs"?`<span class="n">${b.val}${NB}FS</span>`:b.type==="fix"?mh(b.val,"+"):`<span class="n">${pct(b.val)}</span>`;
 const cap=(b,bare)=>{const v=bare?num(b.cap):m(b.cap);return b.type==="pack"?`до ${v} и ${b.fs} фриспинов`:b.type==="pct"?`до ${v}`:""};
@@ -2064,8 +2068,8 @@ function termGroups(b,own){
   g.push(["Как отыграть",w.join("")]);
   if(b.mult){const cats=b.cats?[...b.cats,["Остальные игры",b.others?100:0]]:[["Все игры",100]];
     g.push(["Какие ставки идут в отыгрыш",`<div class="gh"><span>Игра</span><span>Идёт в отыгрыш</span></div>`+cats.map(([n,p])=>`<div class="gm" data-f="Зачёт по категориям (новое)"><div class="l"><span>${n}</span><b class="${p?"":"z"}">${p?p+NB+"%":"не идут"}</b></div>${p?`<div class="bar"><i style="width:${p}%"></i></div>`:""}</div>`).join("")]);}
-  const pay=[]; if(b.maxBet) pay.push(kv("Максимальная ставка",m(b.maxBet),"Макс. ставка (новое)"));
-  if(b.maxWin) pay.push(kv("Максимальный выигрыш",m(b.maxWin),"Макс. выигрыш (новое)"));
+  const pay=[]; if(b.maxBet) pay.push(kv("Макс. ставка",m(b.maxBet),"Макс. ставка (новое)"));
+  if(b.maxWin) pay.push(kv("Макс. выигрыш",m(b.maxWin),"Макс. выигрыш (новое)"));
   if(pay.length) g.push(["Ставка и выигрыш",pay.join("")]);
   return g.map(([t,h])=>`<div class="grp"><span class="eyebrow">${t}</span><div class="box">${h}</div></div>`).join("");
 }
@@ -2190,7 +2194,7 @@ const S={
   guest:{st:{act:null,queue:[],wel:W0},r:()=>guestPage()},
   lvbronze:{lvl:2,st:{act:null,queue:[],wel:WD},r:()=>page()},
   lvdiamond:{lvl:7,st:{act:null,queue:[],wel:WD},r:()=>page()},
-  lvgold:{lvl:4,st:{act:"fri",queue:[],wel:WD},r:()=>page({keys:["gold","ten","slots"]})}, /* бонус уровня: отдельный экран, игрок Gold */
+  lvgold:{lvl:4,st:{act:"fri",queue:[],wel:WD},r:()=>page({keys:["gold","lvr","lvb","lvo","ten"]})}, /* бонусы уровней: все варианты подписи. Игрок Gold, поэтому видит все четыре */
   cryptolong:{cur:"BTC",st:{act:"w1",queue:["one","fri"],wel:W1},r:()=>page()},
   longq:{st:{act:"w1",queue:["fri","ten","slots","wk","mn","rl","nowag","long","w2","w3","promo","promo10"],wel:W1},r:()=>page()},
   profile:{st:{act:"w1",queue:["fri","ten"],wel:W1},r:(arg,re)=>{if(!document.querySelector("#dlg .pdlg"))setTimeout(openProfile,0);return page()}},
