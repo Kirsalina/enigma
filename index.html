@@ -1707,6 +1707,11 @@ button.ava{border:0;cursor:pointer;font:inherit;font-weight:700}
 .hi .tb:not(.gtb){background:var(--card)!important;box-shadow:0 0 0 1px rgba(198,171,252,.35)!important}
 .hi .cw .bc-top,.hi .cw.dim .bc-top,.hi .cw.lock .bc-top{background:var(--grad)!important}
 .hi .ht{background:var(--grad)!important}
+/* 24.11 Линии. Купон: только пунктир, без сплошного разделителя под ним (было две линии друг на друге) — как у плиток в кассе.
+   «Как работает бонус»: вместо пунктира тонкая сплошная серая линия */
+.cw .bc-top,.cw.dim .bc-top,.cw.lock .bc-top,.cw.hot .bc-top{box-shadow:none!important}
+.ht::after{background:var(--div)!important}
+.f390 .ht::after{background:var(--div)!important}
 </style>
 </head>
 <body>
