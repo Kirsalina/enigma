@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" class="hi">
+<html lang="ru">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1692,21 +1692,6 @@ button.ava{border:0;cursor:pointer;font:inherit;font-weight:700}
 .lvi .chip2.me{position:static!important;margin-top:6px;transform:none!important}
 .lvi .chip2.me{max-width:none!important;overflow:visible!important;white-space:nowrap}
 
-/* ===== 23.11, 22:20 ИЕРАРХИЯ (переключатель «Стало/Было», класс .hi). Убрать блок = вернуть как было ===== */
-/* 1. Одна главная кнопка на экран. «Получить» на купонах и «Активировать» у промокода вторичные; заливка при наведении.
-      Главная: «Играть» у активного бонуса; если активного нет — «Получить» у первого шага приветственного пакета; в кассе «Пополнить»; в выпадашке «Получить» */
-.hi .bc-act .btn.p:not([disabled]),.hi .promo2 .btn.p{background:var(--fill)!important;color:var(--text)!important;box-shadow:inset 0 0 0 1.5px rgba(150,144,171,.32)!important;filter:none!important}
-.hi .bc-act .btn.p.glow:not([disabled]){box-shadow:inset 0 0 0 1.5px rgba(150,144,171,.32)!important}
-.hi #frame:not(:has(.tb)) .cw.hot .bc-act .btn.p{background:var(--primary)!important;color:var(--dark)!important;box-shadow:none!important}
-@media (hover:hover){.hi .bc-act .btn.p:not([disabled]):hover,.hi .promo2 .btn.p:hover{background:var(--primary)!important;color:var(--dark)!important;box-shadow:none!important}}
-/* 2. Фиолетовый только для действий и прогресса */
-.hi .of>span{color:var(--muted)!important}
-.hi .chip2.lv{color:var(--text)!important}
-.hi .hn{color:var(--text)!important;box-shadow:inset 0 0 0 1px var(--o)!important}
-/* 3. Чисто: без свечений и градиентов. Активный бонус — «моё»: только фиолетовая обводка. Купоны ровные, цвет даёт картинка. «Как работает» в карточках, как купоны: ровный верх без свечения */
-.hi .tb:not(.gtb){background:var(--card)!important;box-shadow:0 0 0 1px rgba(163,132,217,.22)!important}
-.hi .cw .bc-top,.hi .cw.dim .bc-top,.hi .cw.lock .bc-top{background:var(--grad)!important}
-.hi .ht{background:var(--grad)!important}
 /* 24.11 Линии. Купон: только пунктир, без сплошного разделителя под ним (было две линии друг на друге) — как у плиток в кассе.
    «Как работает бонус»: вместо пунктира тонкая сплошная серая линия */
 .cw .bc-top,.cw.dim .bc-top,.cw.lock .bc-top,.cw.hot .bc-top{box-shadow:none!important}
@@ -1720,10 +1705,8 @@ button.ava{border:0;cursor:pointer;font:inherit;font-weight:700}
 .faq .q{font-weight:500!important}
 .hb b{font-size:17px!important;line-height:24px!important;font-weight:500!important}
 /* Вторичная кнопка как на сайте: прозрачная, обводка 2px rgba(150,144,171,.28). Наведение: обводка акцентом, текст светлее */
-.btn.s:not(.drw .btn),.hi .bc-act .btn.p:not([disabled]),.hi .promo2 .btn.p{background:transparent!important;box-shadow:inset 0 0 0 2px rgba(150,144,171,.28)!important}
-.hi .bc-act .btn.p:not([disabled]),.hi .promo2 .btn.p{color:var(--text)!important}
+.btn.s:not(.drw .btn){background:transparent!important;box-shadow:inset 0 0 0 2px rgba(150,144,171,.28)!important}
 @media (hover:hover){.btn.s:not(.drw .btn):hover{background:transparent!important;color:var(--title)!important;box-shadow:inset 0 0 0 2px rgba(198,171,252,.55)!important}}
-.hi #frame:not(:has(.tb)) .cw.hot .bc-act .btn.p{background:var(--primary)!important;color:var(--dark)!important;box-shadow:none!important}
 /* Клуб как на сайте: лестница (иконка 67, «Ур. N» 11/500 серым, название 17/500 #C6ABFC, порог 13/600), награда (иконка 112, сумма 36/400), строка привилегии (иконка 20 #78728C, 14/600) */
 .lvi .lvb{width:67px;height:67px;object-fit:contain;opacity:1!important}
 .lvi .lvn{font-size:11px!important;line-height:16px;font-weight:500!important;letter-spacing:0!important;text-transform:none!important;color:var(--muted)!important}
@@ -1743,11 +1726,6 @@ button.ava{border:0;cursor:pointer;font:inherit;font-weight:700}
 .f820 .lvi,.f390 .lvi{flex:0 0 92px}
 .lvi.on{box-shadow:none!important}
 .lvi.on::after{content:"";position:absolute;left:16px;right:16px;bottom:0;height:2px;background:var(--primary)}
-
-/* 24.11 Клуб: подпись под строкой привилегии (буст) и под особой наградой Obsidian */
-.lvperk span small{display:block;font-size:13px;line-height:18px;font-weight:400;color:var(--muted);margin-top:2px}
-.lvp-l .lvsp{display:block;font-size:13px;line-height:18px;color:var(--muted);margin-top:4px;max-width:200px}
-.lvperk.sub svg{align-self:start}
 </style>
 </head>
 <body>
@@ -1755,7 +1733,6 @@ button.ava{border:0;cursor:pointer;font:inherit;font-weight:700}
   <span class="scr"><button id="scrBtn" onclick="document.body.classList.toggle('scr-open')"><b>Экран</b><span id="scrName">1. Отыгрывается + следующие</span><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6l4 4 4-4"/></svg></button></span>
   <span><b>Ширина</b><span class="seg" id="w"><button data-v="1440" class="on">ПК</button><button data-v="820">iPad</button><button data-v="390">Телефон</button><button data-v="1920" hidden>1920</button><button data-v="2560" hidden>2560</button></span></span>
   <span id="curbox"><b>Валюта примера</b><span class="seg" id="cur"><button data-v="USD" class="on">USD</button><button data-v="RUB">RUB</button><button data-v="BTC">BTC</button><button data-v="USDT" hidden>USDT</button></span></span>
-  <span><b>Иерархия</b><span class="seg" id="hiSw"><button data-v="1" class="on">Стало</button><button data-v="0">Было</button></span></span>
   <span hidden><b>Поля админки</b><span class="seg" id="annot"><button data-v="off" class="on">Скрыть</button><button data-v="on">Показать</button></span></span>
 </div>
 <div class="layout">
@@ -2162,16 +2139,15 @@ const LVK=["iron","bronze","silver","gold","platinum","diamond","emerald","ruby"
 const hexB=(i,sz=67)=>`<img class="lvb" src="${CLUBI[LVK[i-1]]}" width="${sz}" height="${sz}" alt="">`;
 /* Модульные строки привилегий (вместо абзаца «Рейкбэк и бусты определяются настройками…»). Значения из настроек уровня в админке; здесь пример.
    Строка: иконка 20 #78728C, название 14/600, значение справа. 0 = строки нет. Персональный бонус: Есть / Нет */
-/* 24.11: рейкбэк = 11 % (DEFAULT) + добавка уровня 1 п.п. за уровень → Iron 12 … Obsidian 20. Буст 0,3 % у всех, процент не показываем: строка «Недельный и месячный буст» с Silver (ур. 3) и выше */
-const PERK={rb:[12,13,14,15,16,17,18,19,20],boostFrom:3,pb:[0,0,0,0,1,1,1,1,1]};
-const perks=l=>{const r=(ic,t,v,off,sub)=>`<div class="lvperk ${off?"off":""} ${sub?"sub":""}" data-f="Настройка уровня (админка)">${ic}<span>${t}${sub?`<small>${sub}</small>`:""}</span><b>${v}</b></div>`,i=l-1;
-  return [r(I.hist,"Рейкбэк",PERK.rb[i]+" %"),l>=PERK.boostFrom?r(I.bolt,"Недельный и месячный буст","",0,"Часть ваших ставок возвращается каждую неделю и месяц"):"",r(I.gift,"Персональный бонус",PERK.pb[i]?"Есть":"Нет",!PERK.pb[i])].join("")};
+const PERK={rb:[1,2,3,4,5,6,7,8,10],wb:[0,0,5,5,10,10,15,15,20],mb:[0,0,0,5,5,10,10,15,20],pb:[0,0,0,0,1,1,1,1,1]};
+const perks=l=>{const r=(ic,t,v,off)=>`<div class="lvperk ${off?"off":""}" data-f="Настройка уровня (админка)">${ic}<span>${t}</span><b>${v}</b></div>`,i=l-1;
+  return [r(I.hist,"Рейкбэк",PERK.rb[i]+" %"),PERK.wb[i]?r(I.bolt,"Недельный буст",PERK.wb[i]+" %"):"",PERK.mb[i]?r(I.bolt,"Месячный буст",PERK.mb[i]+" %"):"",r(I.gift,"Персональный бонус",PERK.pb[i]?"Есть":"Нет",!PERK.pb[i])].join("")};
 const clubPage=()=>{const me=ME.level,sel=CSEL,[,from,rw]=CLV[sel-1],left=Math.max(0,from-CTOTAL);
   const base=CLV[me-1][1], pct=Math.max(0,Math.min(100,Math.round((CTOTAL-base)/(from-base)*100))); /* от порога текущего уровня до выбранного: до Gold 38 %, как в профиле */
   const track=`<div class="lvtrack" data-f="Шкала уровней (как на сайте)">${CLV.map(([n,f])=>`<button class="lvi ${n===sel?"on":""} ${n<=me?"got":""}" onclick="CSEL=${n};draw()">${hexB(n)}<span class="lvn">Ур. ${n}</span><b>${LEVELS[n]}</b><small>от ${m(f,"USD")}</small>${n===me?`<span class="chip2 me">Ваш уровень</span>`:""}</button>`).join("")}</div>`;
   const prog=sel>me?`<div class="lvprog" data-f="Прогресс до уровня (сервис Клуба)"><div class="lvprog-t"><span>Ещё <b>${m(left,"USD")}</b> ставок до ${LEVELS[sel]}</span><em>${pct} %</em></div><div class="bar"><i style="width:${pct}%"></i></div></div>`
     :`<div class="lvprog done"><span>${I.tick}${sel===me?"Ваш уровень":"Уровень пройден"}</span></div>`;
-  const panel=`<section class="panel lvp"><div class="lvp-l">${hexB(sel,112)}<div><span class="eyebrow">Награда за уровень</span><b data-f="Бонус level-up (по claim)">${rw?m(rw,"USD"):"Персональная"}</b>${rw?"":`<small class="lvsp">Подберёт поддержка, заявка создаётся сама</small>`}</div></div>
+  const panel=`<section class="panel lvp"><div class="lvp-l">${hexB(sel,112)}<div><span class="eyebrow">Награда за уровень</span><b data-f="Бонус level-up (по claim)">${rw?m(rw,"USD"):"Особая"}</b></div></div>
     <div class="lvp-r"><span class="eyebrow">Ур. ${sel}</span><h3>Что даёт ${LEVELS[sel]}</h3>${prog}
       ${perks(sel)}</div></section>`;
   /* Вариант B (23.11, по словам Серёжи): один блок на весь Клуб, от выбранного уровня не зависит.
@@ -2409,9 +2385,6 @@ document.getElementById("cur").onclick=e=>{const b=e.target.closest("button");if
 document.getElementById("annot").onclick=e=>{const b=e.target.closest("button");if(!b)return;document.querySelectorAll("#annot button").forEach(x=>x.classList.toggle("on",x===b));document.body.classList.toggle("annot",b.dataset.v==="on")};
 document.getElementById("states").onclick=e=>{const b=e.target.closest("button");if(b)go(b.dataset.s,undefined,true)};
 go("main",undefined,true);
-
-/* 23.11 Иерархия: «Стало» (класс hi на html) / «Было». Только визуальный слой, логика не меняется */
-document.getElementById("hiSw").onclick=e=>{const b=e.target.closest("button");if(!b)return;document.querySelectorAll("#hiSw button").forEach(x=>x.classList.toggle("on",x===b));document.documentElement.classList.toggle("hi",b.dataset.v==="1");fitAll()};
 
 </script>
 </body>
