@@ -1783,6 +1783,23 @@ body[data-g="b"] .states [data-g="c"],body[data-g="c"] .states [data-g="b"]{disp
 .tool>span{display:inline-flex;align-items:center;gap:6px;flex:none;white-space:nowrap}.tool>span.scr{flex:0 1 auto;min-width:0}.tool>span[hidden]{display:none}.tool .scr button{max-width:100%}
 .lvc-act .chip2{justify-self:end}.f390 .lvc-act .chip2{justify-self:start}
 .lvc.many,.f820 .lvc.many,.f390 .lvc.many{grid-template-columns:1fr}
+
+/* Клуб v3: тише. Награда в шапке справа, без отдельной карточки и чипов */
+.clh .tb-act{display:grid;gap:12px;align-content:center}
+.clr{display:grid;gap:2px;justify-items:end;text-align:right}
+.clr span{font-size:13px;line-height:20px;color:var(--muted)}
+.clr b{font-size:30px;line-height:36px;font-weight:600;letter-spacing:-.9px;color:var(--title);white-space:nowrap}
+.clr b.sm{font-size:20px;line-height:28px;letter-spacing:0}
+.clr small{font-size:13px;line-height:20px;color:var(--muted)}
+.clr small.ok,.lvst.ok{color:var(--green)}.clr small svg,.lvst svg{width:12px;height:12px;vertical-align:-1px;margin-right:4px}
+.clr.next b{color:var(--text)}
+.f820 .clr,.f390 .clr{justify-items:start;text-align:left}
+.clh .tb-nums b{color:var(--title)}
+.lvp.v3 .lvp-l{justify-content:flex-start;gap:4px}
+.lvp.v3 .lvp-l b{font-size:36px;line-height:42px;font-weight:400}
+.lvp .lvst{display:block;font-size:13px;line-height:20px;color:var(--muted)}
+.lvp.v3 .lvp-r h3{margin-bottom:8px}
+.f390 .lvp.v3 .lvp-l{flex-direction:column;align-items:flex-start}
 </style>
 </head>
 <body>
@@ -2485,53 +2502,39 @@ const usd=n=>m(n,"USD");
 const lvImg=(l,sz,cls="lvb")=>`<img class="${cls}" src="${l?CLUBI[LVK[l-1]]:CLUBI.unranked}" width="${sz}" height="${sz}" alt="">`;
 const thr=l=>l?CLV[l-1][1]:0, rwd=l=>CLV[l-1][2];
 
-/* ── Шапка «Ваш уровень»: тот же блок, что активный бонус. Кольцо: прогресс до следующего уровня ── */
+/* ── Шапка «Ваш уровень» (v3, 24.11): один блок. Слева кольцо прогресса со значком, в центре уровень и ставки,
+   справа награда: ждёт → «Забрать»; забрана → следующая награда. Отдельной карточки награды нет, «Играть» нет ── */
 const clubHero=()=>{const me=ME.level,nx=me<9?me+1:0,base=thr(me),to=nx?thr(nx):0,
   p=nx?Math.max(1,Math.min(99,Math.floor((CL.total-base)/(to-base)*100))):100;
   if(CL.guest) return `<section class="panel acc tb clh gst" data-f="Гость: приглашение в Клуб">
-    <div class="ring"><span class="halo"></span><img class="art" src="${CLUBI.unranked}" alt=""></div>
-    <div class="tb-info"><span class="chip2 tbst">9 уровней</span><div class="tb-amt">Клуб Enigma</div><div class="tb-name">Каждая ставка поднимает уровень</div>
-      <div class="tb-nums"><span>Награда за уровень <b>до ${usd(700)}</b></span><span>Рейкбэк <b>до 20${NB}%</b></span></div></div>
-    <div class="tb-act"><button class="btn p lg">Регистрация</button><div class="two one"><button class="btn s">Вход</button></div></div></section>`;
+    <div class="ring"><img class="art" src="${CLUBI.unranked}" alt=""></div>
+    <div class="tb-info"><div class="tb-amt">Клуб Enigma</div><div class="tb-name">9 уровней. Каждая ставка поднимает уровень</div>
+      <div class="tb-nums"><span>Награда за уровень до <b>${usd(700)}</b></span><span>Рейкбэк до <b>20${NB}%</b></span></div></div>
+    <div class="tb-act"><button class="btn p lg">Регистрация</button><button class="btn s">Вход</button></div></section>`;
   const ring=`<div class="ring" data-f="Прогресс до следующего уровня (сервис Клуба)"><svg viewBox="0 0 168 168"><defs><linearGradient id="rgc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8A5CF0"/><stop offset="1" stop-color="#C6ABFC"/></linearGradient></defs><circle class="tr" cx="84" cy="84" r="80"/><circle class="pr" cx="84" cy="84" r="80" style="stroke:url(#rgc)" stroke-dasharray="${(p/100*502.65).toFixed(1)} 600"/></svg><img class="art" src="${me?CLUBI[LVK[me-1]]:CLUBI.unranked}" alt="">${nx?`<span class="pc">${p}${NB}%</span>`:""}</div>`;
-  const nums=nx?`<span>Ставки <b>${usd(CL.total)}</b> <span class="nw">из ${usd(to)}</span></span><span class="d up">Ещё ${usd(to-CL.total)} ставок до ${LEVELS[nx]}</span>`
-    :`<span>Ставки <b>${usd(CL.total)}</b></span><span class="d up">Максимальный уровень</span>`;
-  const claim=CL.pending.length>0;
+  const nums=nx?`<span>Ещё <b>${usd(to-CL.total)}</b> ставок до ${LEVELS[nx]}</span>`:`<span>Ставки <b>${usd(CL.total)}</b></span>`;
+  const pend=CL.pending[0];
+  const act=pend?`<div class="clr" data-f="Бонус level-up: ждёт claim"><span>Награда за ${LEVELS[pend]}</span><b data-fit>${usd(rwd(pend))}</b>${CL.pending.length>1?`<small>Ещё ${CL.pending.length-1}: ${CL.pending.slice(1).map(l=>`${LEVELS[l]} ${usd(rwd(l))}`).join(", ")}</small>`:`<small>Без отыгрыша</small>`}</div><button class="btn p lg" onclick="claimOpen(${pend})">Забрать</button>`
+    :CL.obs?`<div class="clr" data-f="Особая награда Obsidian (заявка)"><span>Награда за Obsidian</span><b class="sm">Персональная</b><small class="ok">${I.tick}Заявка создана, ответ придёт в чат</small></div>`
+    :nx&&rwd(nx)?`<div class="clr next"><span>Награда за ${LEVELS[nx]}</span><b data-fit>${usd(rwd(nx))}</b><small>Без отыгрыша</small></div>`
+    :nx?`<div class="clr next"><span>Награда за ${LEVELS[nx]}</span><b class="sm">Персональная</b></div>`:"";
   return `<section class="panel acc tb clh"> ${ring}
-    <div class="tb-info"><span class="chip2 tbst" data-f="Уровень игрока">${me?"Ваш уровень":"Пока без уровня"}</span>
-      <div class="tb-amt" data-fit data-f="Уровень">${LEVELS[me]}</div><div class="tb-name">${me?`Ур. ${me}`:`Первый уровень Iron от ${usd(thr(1))} ставок`}</div>
+    <div class="tb-info"><div class="tb-amt" data-fit data-f="Уровень">${LEVELS[me]}</div><div class="tb-name">${me?`Ур. ${me}`:`Первый уровень от ${usd(thr(1))} ставок`}</div>
       <div class="tb-nums">${nums}</div></div>
-    <div class="tb-act"><button class="btn ${claim?"s":"p"} lg">Играть</button></div></section>`};
+    <div class="tb-act">${act}</div></section>`};
+const clubClaim=()=>"";
 
-/* ── «Награда за уровень»: ждёт, пока игрок не заберёт. Каждый уровень отдельно, своей кнопкой ── */
-const clubClaim=()=>{
-  if(CL.obs) return `<section class="panel lvc obs" data-f="Особая награда Obsidian (заявка)">
-    <div class="lvc-art"><img src="${ASSET.vip}" alt=""></div>
-    <div class="lvc-tx"><span class="eyebrow">Награда за Obsidian</span><b>Персональная награда</b><p>Её подберёт поддержка. Заявка уже создана, ответ придёт в чат.</p></div>
-    <div class="lvc-act"><span class="chip2 ok">${I.tick}Заявка создана</span><button class="btn s">Открыть чат</button></div></section>`;
-  if(!CL.pending.length) return "";
-  const one=CL.pending.length===1;
-  const row=(l,i)=>`<div class="lvc-row">${lvImg(l,56)}<div><b data-fit data-f="Сумма бонуса level-up">${usd(rwd(l))}</b><small>Награда за ${LEVELS[l]}</small></div><button class="btn ${i?"s":"p"} md" onclick="claimOpen(${l})">Забрать</button></div>`;
-  if(one){const l=CL.pending[0];return `<section class="panel lvc" data-f="Бонус level-up: ждёт claim">
-    <div class="lvc-art"><img src="${ASSET.levelup}" alt=""></div>
-    <div class="lvc-tx"><span class="eyebrow">Новый уровень: ${LEVELS[l]}</span><b data-fit data-f="Сумма бонуса level-up">${usd(rwd(l))}</b>
-      <div class="lvc-tags"><span class="chip2">Без отыгрыша</span><span class="chip2">В любой валюте</span></div></div>
-    <div class="lvc-act"><button class="btn p lg" onclick="claimOpen(${l})">Забрать</button></div></section>`}
-  return `<section class="panel lvc many" data-f="Несколько бонусов level-up: каждый своим claim">
-    <div class="lvc-head"><img src="${ASSET.levelup}" alt=""><div><span class="eyebrow">Новые уровни: ${CL.pending.length}</span><b>${usd(CL.pending.reduce((a,l)=>a+rwd(l),0))}</b><small>Без отыгрыша, в любой валюте</small></div></div>
-    <div class="lvc-list">${CL.pending.map(row).join("")}</div></section>`};
-
-/* ── Шкала + «Что даёт X» ── */
+/* ── Шкала + «Что даёт X»: значок уровня только на шкале; слева награда и её статус, справа привилегии.
+   Прогресс только у будущих уровней ── */
 const clubLevels=()=>{const me=ME.level,sel=CSEL,[,from,rw]=CLV[sel-1],left=Math.max(0,from-CL.total),base=thr(me),
   pct=Math.max(1,Math.min(99,Math.floor((CL.total-base)/(from-base)*100)));
   const track=`<div class="lvtrack" data-f="Шкала уровней (как на сайте)">${CLV.map(([n,f])=>`<button class="lvi ${n===sel?"on":""} ${n<=me?"got":""}" onclick="CSEL=${n};draw()">${hexB(n)}<span class="lvn">Ур. ${n}</span><b>${LEVELS[n]}</b><small>от ${usd(f)}</small>${n===me?`<span class="chip2 me">Ваш уровень</span>`:""}</button>`).join("")}</div>`;
-  const prog=sel>me?`<div class="lvprog" data-f="Прогресс до уровня (сервис Клуба)"><div class="lvprog-t"><span>Ещё <b>${usd(left)}</b> ставок до ${LEVELS[sel]}</span><em>${pct}${NB}%</em></div><div class="bar"><i style="width:${pct}%"></i></div></div>`
-    :`<div class="lvprog done"><span>${I.tick}${sel===me?"Ваш уровень":"Уровень пройден"}</span></div>`;
-  const st=sel>me?"":CL.pending.includes(sel)?`<span class="chip2 wait">Ждёт</span>`:CL.guest?"":`<span class="chip2 ok">${I.tick}Получена</span>`;
-  const rwBlock=rw?`<b data-f="Бонус level-up">${usd(rw)}</b>${st}`:`<b data-f="Особая награда (заявка)">Персональная</b><small class="lvsp">Подберёт поддержка, заявка создаётся сама</small>`;
-  return `<section class="clubtop"><h2 class="sh">Уровни</h2><p class="shsub">Порог: сумма ставок в долларах за всё время. Уровень не падает</p>${track}</section>
-  <section class="panel lvp"><div class="lvp-l">${hexB(sel,112)}<div><span class="eyebrow">Награда за уровень</span>${rwBlock}</div></div>
-    <div class="lvp-r"><span class="eyebrow">Ур. ${sel}</span><h3>Что даёт ${LEVELS[sel]}</h3>${CL.guest?"":prog}${perks(sel)}</div></section>`};
+  const prog=sel>me&&!CL.guest?`<div class="lvprog" data-f="Прогресс до уровня (сервис Клуба)"><div class="lvprog-t"><span>Ещё <b>${usd(left)}</b> ставок до ${LEVELS[sel]}</span><em>${pct}${NB}%</em></div><div class="bar"><i style="width:${pct}%"></i></div></div>`:"";
+  const st=CL.guest||sel>me?"":CL.pending.includes(sel)?`<small class="lvst">Ждёт, заберите вверху</small>`:`<small class="lvst ok">${I.tick}Получена</small>`;
+  const rwBlock=rw?`<b data-f="Бонус level-up">${usd(rw)}</b>${st}`:`<b data-f="Особая награда (заявка)">Персональная</b><small class="lvst">Подберёт поддержка</small>`;
+  return `<section class="clubtop"><h2 class="sh">Уровни</h2><p class="shsub">Сумма ставок в долларах за всё время. Уровень не падает</p>${track}</section>
+  <section class="panel lvp v3"><div class="lvp-l"><span class="eyebrow">Награда за ${LEVELS[sel]}</span>${rwBlock}</div>
+    <div class="lvp-r"><h3>Что даёт ${LEVELS[sel]}</h3>${prog}${perks(sel)}</div></section>`};
 
 /* ── Бонусы следующих уровней (решение 23–24.11) ── */
 const clubNext=()=>{const me=ME.level;if(CL.guest)return"";const lo=b=>Math.min(...b.lvl.map(([a])=>a).filter(a=>a>me));
@@ -2540,18 +2543,15 @@ const clubNext=()=>{const me=ME.level;if(CL.guest)return"";const lo=b=>Math.min(
 
 /* ── Как устроен Клуб (компонент «Как работает» с сайта) + вопросы ── */
 const CHOW=[["step3","Играете","Каждая ставка в долларах идёт в сумму"],["levelup","Растёт уровень","Уровень не падает, даже после возврата"],["coins","Забираете награду","За каждый новый уровень, без отыгрыша"],["vip","Получаете больше","Выше рейкбэк, с Silver бусты"]];
-const CFAQ=[["Как попасть в Клуб?","Зарегистрируйтесь и играйте. Уровень считается сам по сумме ставок."],
-  ["Может ли уровень упасть?","Нет. Сумма ставок копится всё время, уровень остаётся с вами."],
-  ["Какие ставки считаются?","Подтверждённые ставки в играх, в долларах. Возвраты и отмены вычитаются."],
-  ["Что я получу за новый уровень?","Награду без отыгрыша. Заберите её на этой странице в удобной валюте."],
-  ["Прошёл несколько уровней одной ставкой?","Награда будет за каждый уровень, каждую забираете отдельно."],
-  ["Что такое бусты?","Часть ваших ставок за неделю и за месяц, одной суммой. Открываются с Silver."],
-  ["Что такое рейкбэк?","Часть каждой ставки возвращается вам, даже проигрышной. Чем выше уровень, тем больше."],
-  ["Что даёт Obsidian?","Персональную награду. Заявка создаётся сама, поддержка напишет вам в чат."]];
+const CFAQ=[["Какие ставки считаются?","Подтверждённые ставки в играх, в долларах. Возвраты и отмены вычитаются."],
+  ["Может ли уровень упасть?","Нет. Сумма ставок копится всё время."],
+  ["Как забрать награду за уровень?","Кнопкой «Забрать» на этой странице, в удобной валюте. Отыгрывать не нужно."],
+  ["Прошёл несколько уровней сразу?","Награда за каждый уровень, забираете по очереди."],
+  ["Что даёт Obsidian?","Персональную награду. Заявка создаётся сама, поддержка напишет в чат."]];
 const clubHow=()=>`<h2 class="sh">Как устроен Клуб</h2><p class="shsub">Играете, растёт уровень, растут награды</p><div class="how2">${CHOW.map(([a,t,d],i)=>`<div class="hs"><div class="ht"><span class="hn">${i+1}</span><img class="art" src="${ASSET[a]}" alt=""></div><div class="hb"><b>${t}</b><span>${d}</span></div></div>`).join("")}</div>
   <h2 class="sh fqh"><svg class="i" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M6.3 6.3a1.8 1.8 0 013.4.7c0 1.2-1.7 1.5-1.7 2.5M8 11.4v.1"/></svg>Частые вопросы</h2><div class="faq">${CFAQ.map(([q,a])=>`<button class="q" aria-expanded="false" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')!=='true')">${q}<i>+</i></button><div class="a">${a}</div>`).join("")}</div>`;
 
-clubPage=()=>site(`${clubHero()}${clubClaim()}${clubLevels()}${clubNext()}${clubHow()}`,{tab:"Клуб",faq:false,guest:CL.guest});
+clubPage=()=>site(`${clubHero()}${clubLevels()}${clubNext()}${clubHow()}`,{tab:"Клуб",faq:false,guest:CL.guest});
 
 /* ── Забрать: выпадашка с выбором валюты (карточки валют как в кассе) ── */
 const ccard=(c,usdAmt)=>`<button class="curc2 ${c===CL.cur?"on":""}" data-c="${c}" onclick="claimPick('${c}')"><div class="h">${coin(c)}<div><b>${c}</b>${COIN[c][2]?`<span>${COIN[c][2]}</span>`:""}</div>${c===CL.cur?`<span class="ck">${I.tick}</span>`:""}</div><span class="l">Получите</span><em>${cfmt(usdAmt,c)}</em></button>`;
@@ -2570,7 +2570,7 @@ function claimMode(md){CL.mode=md;const list=md==="crypto"?CRYPTO:FIAT;if(!list.
 function claimPick(c){CL.cur=c;const d=document.querySelector("#dlg .clcur");if(!d)return;d.innerHTML=clist(window.__cl);claimLabel()}
 function claimLabel(){const b=document.getElementById("clgo");if(b)b.textContent="Забрать "+cfmt(rwd(window.__cl),CL.cur)}
 function claimDo(l){const amt=cfmt(rwd(l),CL.cur);CL.pending=CL.pending.filter(x=>x!==l);closeDlg();draw();
-  (document.querySelector("#frame .lvc .btn.p, #frame .lvc .btn")||document.querySelector("#frame .tb-act .btn"))?.focus({preventScroll:true});
+  document.querySelector("#frame .tb-act .btn")?.focus({preventScroll:true});
   showToast(`Награда за ${LEVELS[l]} зачислена: ${amt}`)}
 
 /* ── Состояния: подключение к меню «Клуб» ── */
