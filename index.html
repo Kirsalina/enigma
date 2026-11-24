@@ -1743,6 +1743,11 @@ button.ava{border:0;cursor:pointer;font:inherit;font-weight:700}
 .f820 .lvi,.f390 .lvi{flex:0 0 92px}
 .lvi.on{box-shadow:none!important}
 .lvi.on::after{content:"";position:absolute;left:16px;right:16px;bottom:0;height:2px;background:var(--primary)}
+
+/* 24.11 Клуб: подпись под строкой привилегии (буст) и под особой наградой Obsidian */
+.lvperk span small{display:block;font-size:13px;line-height:18px;font-weight:400;color:var(--muted);margin-top:2px}
+.lvp-l .lvsp{display:block;font-size:13px;line-height:18px;color:var(--muted);margin-top:4px;max-width:200px}
+.lvperk.sub svg{align-self:start}
 </style>
 </head>
 <body>
@@ -2157,15 +2162,16 @@ const LVK=["iron","bronze","silver","gold","platinum","diamond","emerald","ruby"
 const hexB=(i,sz=67)=>`<img class="lvb" src="${CLUBI[LVK[i-1]]}" width="${sz}" height="${sz}" alt="">`;
 /* Модульные строки привилегий (вместо абзаца «Рейкбэк и бусты определяются настройками…»). Значения из настроек уровня в админке; здесь пример.
    Строка: иконка 20 #78728C, название 14/600, значение справа. 0 = строки нет. Персональный бонус: Есть / Нет */
-const PERK={rb:[1,2,3,4,5,6,7,8,10],wb:[0,0,5,5,10,10,15,15,20],mb:[0,0,0,5,5,10,10,15,20],pb:[0,0,0,0,1,1,1,1,1]};
-const perks=l=>{const r=(ic,t,v,off)=>`<div class="lvperk ${off?"off":""}" data-f="Настройка уровня (админка)">${ic}<span>${t}</span><b>${v}</b></div>`,i=l-1;
-  return [r(I.hist,"Рейкбэк",PERK.rb[i]+" %"),PERK.wb[i]?r(I.bolt,"Недельный буст",PERK.wb[i]+" %"):"",PERK.mb[i]?r(I.bolt,"Месячный буст",PERK.mb[i]+" %"):"",r(I.gift,"Персональный бонус",PERK.pb[i]?"Есть":"Нет",!PERK.pb[i])].join("")};
+/* 24.11: рейкбэк = 11 % (DEFAULT) + добавка уровня 1 п.п. за уровень → Iron 12 … Obsidian 20. Буст 0,3 % у всех, процент не показываем: строка «Недельный и месячный буст» с Silver (ур. 3) и выше */
+const PERK={rb:[12,13,14,15,16,17,18,19,20],boostFrom:3,pb:[0,0,0,0,1,1,1,1,1]};
+const perks=l=>{const r=(ic,t,v,off,sub)=>`<div class="lvperk ${off?"off":""} ${sub?"sub":""}" data-f="Настройка уровня (админка)">${ic}<span>${t}${sub?`<small>${sub}</small>`:""}</span><b>${v}</b></div>`,i=l-1;
+  return [r(I.hist,"Рейкбэк",PERK.rb[i]+" %"),l>=PERK.boostFrom?r(I.bolt,"Недельный и месячный буст","",0,"Часть ваших ставок возвращается каждую неделю и месяц"):"",r(I.gift,"Персональный бонус",PERK.pb[i]?"Есть":"Нет",!PERK.pb[i])].join("")};
 const clubPage=()=>{const me=ME.level,sel=CSEL,[,from,rw]=CLV[sel-1],left=Math.max(0,from-CTOTAL);
   const base=CLV[me-1][1], pct=Math.max(0,Math.min(100,Math.round((CTOTAL-base)/(from-base)*100))); /* от порога текущего уровня до выбранного: до Gold 38 %, как в профиле */
   const track=`<div class="lvtrack" data-f="Шкала уровней (как на сайте)">${CLV.map(([n,f])=>`<button class="lvi ${n===sel?"on":""} ${n<=me?"got":""}" onclick="CSEL=${n};draw()">${hexB(n)}<span class="lvn">Ур. ${n}</span><b>${LEVELS[n]}</b><small>от ${m(f,"USD")}</small>${n===me?`<span class="chip2 me">Ваш уровень</span>`:""}</button>`).join("")}</div>`;
   const prog=sel>me?`<div class="lvprog" data-f="Прогресс до уровня (сервис Клуба)"><div class="lvprog-t"><span>Ещё <b>${m(left,"USD")}</b> ставок до ${LEVELS[sel]}</span><em>${pct} %</em></div><div class="bar"><i style="width:${pct}%"></i></div></div>`
     :`<div class="lvprog done"><span>${I.tick}${sel===me?"Ваш уровень":"Уровень пройден"}</span></div>`;
-  const panel=`<section class="panel lvp"><div class="lvp-l">${hexB(sel,112)}<div><span class="eyebrow">Награда за уровень</span><b data-f="Бонус level-up (по claim)">${rw?m(rw,"USD"):"Особая"}</b></div></div>
+  const panel=`<section class="panel lvp"><div class="lvp-l">${hexB(sel,112)}<div><span class="eyebrow">Награда за уровень</span><b data-f="Бонус level-up (по claim)">${rw?m(rw,"USD"):"Персональная"}</b>${rw?"":`<small class="lvsp">Подберёт поддержка, заявка создаётся сама</small>`}</div></div>
     <div class="lvp-r"><span class="eyebrow">Ур. ${sel}</span><h3>Что даёт ${LEVELS[sel]}</h3>${prog}
       ${perks(sel)}</div></section>`;
   /* Вариант B (23.11, по словам Серёжи): один блок на весь Клуб, от выбранного уровня не зависит.
