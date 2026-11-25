@@ -1800,13 +1800,78 @@ body[data-g="b"] .states [data-g="c"],body[data-g="c"] .states [data-g="b"]{disp
 .lvp .lvst{display:block;font-size:13px;line-height:20px;color:var(--muted)}
 .lvp.v3 .lvp-r h3{margin-bottom:8px}
 .f390 .lvp.v3 .lvp-l{flex-direction:column;align-items:flex-start}
+
+/* ══ 26.11 Широкие экраны (1440 / 1920 / 2560+): «сетка, а не плашки» ══
+   Правило: верх страницы собран из карточек той же сетки, что купоны (1440: 3 колонки, 1920: 5, 2560: 6, зазор 12).
+   Карточка максимум 2 колонки. На большом экране растёт число колонок, а не ширина блоков. Ряды выровнены по левому краю, как ряды купонов.
+   iPad и телефон не меняются: там .dash обычный блок. */
+.ptl{display:none}
+.dash>.tb:first-child{margin-top:40px}
+.rhero+.dash>.psec:first-child{margin-top:40px!important}.rhero+.dash>.psec:first-child>.sh:first-child{margin-top:0!important}
+.f1440 .dash,.f1920 .dash,.f2560 .dash{display:grid;gap:12px;margin-top:40px;align-items:start}
+.f1440 .dash{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-areas:"a a p" "q q ."}
+.f1920 .dash{grid-template-columns:repeat(5,minmax(0,1fr));grid-template-areas:"a a q q p"}
+.f2560 .dash{grid-template-columns:repeat(6,minmax(0,1fr));grid-template-areas:"a a q q p ."}
+.f1440 .dash.noq{grid-template-areas:"a a p"}.f1920 .dash.noq{grid-template-areas:"a a p . ."}.f2560 .dash.noq{grid-template-areas:"a a p . . ."}
+.f1440 .dash.noa{grid-template-areas:"p . ."}.f1920 .dash.noa{grid-template-areas:"p . . . ."}.f2560 .dash.noa{grid-template-areas:"p . . . . ."}
+.f1440 .dash.g{grid-template-areas:"a a ."}.f1920 .dash.g{grid-template-areas:"a a . . ."}.f2560 .dash.g{grid-template-areas:"a a . . . ."}
+.f1440 .dash>*,.f1920 .dash>*,.f2560 .dash>*{margin:0!important;min-width:0}
+.dash>.tb{grid-area:a}.dash>.nxp{grid-area:q}.dash>.psec{grid-area:p}
+/* Активный бонус / регистрация: раскладка iPad (кольцо + текст, кнопки строкой снизу) */
+.f1440 .dash>.tb,.f1920 .dash>.tb,.f2560 .dash>.tb{grid-template-columns:136px minmax(0,1fr)!important;grid-template-areas:"ring info" "act act"!important;row-gap:20px!important;column-gap:24px!important;align-items:center!important;align-content:center}
+.f1440 .dash .ring,.f1920 .dash .ring,.f2560 .dash .ring{width:136px;height:136px}
+.f1440 .dash .ring .art,.f1920 .dash .ring .art,.f2560 .dash .ring .art{width:80px!important;height:80px!important}
+.f1440 .dash .tb-act,.f1920 .dash .tb-act,.f2560 .dash .tb-act{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;align-self:end}
+.f1440 .dash .tb-act .two,.f1920 .dash .tb-act .two,.f2560 .dash .tb-act .two{display:flex;gap:8px}
+.f1440 .dash .tb-act>.btn.p,.f1920 .dash .tb-act>.btn.p,.f2560 .dash .tb-act>.btn.p,.f1440 .dash .tb-act .two .btn,.f1920 .dash .tb-act .two .btn,.f2560 .dash .tb-act .two .btn{height:48px}
+.f1440 .dash .tb-act .two .btn.sq,.f1920 .dash .tb-act .two .btn.sq,.f2560 .dash .tb-act .two .btn.sq{width:48px;min-width:48px}
+/* Первый ряд одной высоты (282 = высота карточки промокода с обводкой). Длинная очередь растёт вниз сама, соседи не тянутся */
+.f1440 .dash>.tb,.f1920 .dash>.tb,.f2560 .dash>.tb,.dash>.psec,.f1920 .dash>.nxp,.f2560 .dash>.nxp{min-height:282px}
+.f390 .dash>.psec,.f820 .dash>.psec{min-height:0}
+/* Промокод: вертикальная карточка как купон. Сверху арт (растягивается по высоте ряда), перфорация с вырезами по бокам, снизу поле и кнопка: всегда 144px, поэтому вырез считаем от низа */
+.f1440 .dash .psec,.f1920 .dash .psec,.f2560 .dash .psec{display:flex;flex-direction:column}
+.f1440 .dash .psec>.sh,.f1920 .dash .psec>.sh,.f2560 .dash .psec>.sh{display:none}
+.f1440 .dash .ptl,.f1920 .dash .ptl,.f2560 .dash .ptl{display:block;font-size:15px;line-height:20px;font-weight:600;color:var(--title)}
+.f1440 .dash .pw,.f1920 .dash .pw,.f2560 .dash .pw{flex:1;display:flex;--nb:145px;
+  -webkit-mask:radial-gradient(circle var(--nr) at 0 calc(100% - var(--nb)),#0000 calc(var(--nr) - .5px),#000 var(--nr)) left/51% 100% no-repeat,radial-gradient(circle var(--nr) at 100% calc(100% - var(--nb)),#0000 calc(var(--nr) - .5px),#000 var(--nr)) right/51% 100% no-repeat;
+  mask:radial-gradient(circle var(--nr) at 0 calc(100% - var(--nb)),#0000 calc(var(--nr) - .5px),#000 var(--nr)) left/51% 100% no-repeat,radial-gradient(circle var(--nr) at 100% calc(100% - var(--nb)),#0000 calc(var(--nr) - .5px),#000 var(--nr)) right/51% 100% no-repeat}
+.f1440 .dash .pw>.promo2,.f1920 .dash .pw>.promo2,.f2560 .dash .pw>.promo2{flex:1;width:auto;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(136px,1fr) 144px;
+  -webkit-mask:radial-gradient(circle calc(var(--nr) + 1px) at -1px calc(100% - 144px),#0000 calc(var(--nr) + .5px),#000 calc(var(--nr) + 1px)) left/51% 100% no-repeat,radial-gradient(circle calc(var(--nr) + 1px) at calc(100% + 1px) calc(100% - 144px),#0000 calc(var(--nr) + .5px),#000 calc(var(--nr) + 1px)) right/51% 100% no-repeat!important;
+  mask:radial-gradient(circle calc(var(--nr) + 1px) at -1px calc(100% - 144px),#0000 calc(var(--nr) + .5px),#000 calc(var(--nr) + 1px)) left/51% 100% no-repeat,radial-gradient(circle calc(var(--nr) + 1px) at calc(100% + 1px) calc(100% - 144px),#0000 calc(var(--nr) + .5px),#000 calc(var(--nr) + 1px)) right/51% 100% no-repeat!important}
+.f1440 .dash .promo2 .pstub,.f1920 .dash .promo2 .pstub,.f2560 .dash .promo2 .pstub{background:radial-gradient(180px 140px at 50% 50%,rgba(163,132,217,.24),transparent 70%),var(--grad)}
+.f1440 .dash .promo2 .pstub::after,.f1920 .dash .promo2 .pstub::after,.f2560 .dash .promo2 .pstub::after{left:16px;right:16px;top:auto;bottom:0;width:auto;height:1px;background:repeating-linear-gradient(90deg,var(--perf) 0 6px,transparent 6px 12px)}
+.f1440 .dash .promo2 .pstub .art,.f1920 .dash .promo2 .pstub .art,.f2560 .dash .promo2 .pstub .art{width:100px!important;height:100px!important}
+.f1440 .dash .promo2 .pbody,.f1920 .dash .promo2 .pbody,.f2560 .dash .promo2 .pbody{padding:16px 20px 12px!important;align-content:end;gap:12px}
+.f1440 .dash .promo2 .pr,.f1920 .dash .promo2 .pr,.f2560 .dash .promo2 .pr{flex-direction:column;align-items:stretch;max-width:none;gap:8px}
+.f1440 .dash .promo2 .pin,.f1920 .dash .promo2 .pin,.f2560 .dash .promo2 .pin{display:grid;gap:6px}
+.f1440 .dash .promo2 .btn,.f1920 .dash .promo2 .btn,.f2560 .dash .promo2 .btn,.f1440 .dash .promo2 .pok,.f1920 .dash .promo2 .pok,.f2560 .dash .promo2 .pok{width:100%;height:44px}
+/* «Как работает бонус»: шаг = колонка сетки купонов (на 1440 как было: 4 в ряд) */
+.f1920 .how2{grid-template-columns:repeat(5,minmax(0,1fr))}.f2560 .how2{grid-template-columns:repeat(6,minmax(0,1fr))}
+/* Текстовые блоки (вопросы, история) не шире 3 колонок */
+.f1920 .faq,.f1920 .hist{max-width:calc((100% - 48px) / 5 * 3 + 24px)}
+.f2560 .faq,.f2560 .hist{max-width:calc((100% - 60px) / 6 * 3 + 24px)}
+/* Переключатель у заголовка раздела: рядом с заголовком, а не у дальнего края */
+.f1920 .sech.has,.f2560 .sech.has{justify-content:flex-start;gap:32px}
+/* 26.11 Переключатель как на сайте (раздел «История»): тёмная капсула, активный пункт залит сиреневым, текст тёмный. Один стиль для всех переключателей */
+.segm,.curf2{background:#1D1B28!important;box-shadow:none!important;padding:4px!important;gap:4px}
+.segm span,.curf2 button{color:var(--muted)}
+.segm span.on,.curf2 button.on{background:var(--primary)!important;color:var(--dark)!important;font-weight:500}
+.curf2 button.on .c{color:var(--dark)!important;opacity:.6}
+@media (hover:hover){.curf2 button:not(.on):hover{color:var(--title)}}
+/* 26.11 Широкие экраны: Клуб и касса по тому же правилу. Блок уровня не шире 3 колонок; форма кассы не шире, чем на 1440 */
+.f1920 .clubtop,.f1920 .lvp{max-width:calc((100% - 48px) / 5 * 3 + 24px)}
+.f2560 .clubtop,.f2560 .lvp{max-width:calc((100% - 60px) / 6 * 3 + 24px)}
+.f1920 .cash-main>.step,.f2560 .cash-main>.step{max-width:966px}
+/* 26.11 Клуб v2: шапка уровня (.clh) той же ширины, что шкала и «Что даёт» (3 колонки) */
+.f1920 .tb.clh,.f1920 .lvc{max-width:calc((100% - 48px) / 5 * 3 + 24px)}
+.f2560 .tb.clh,.f2560 .lvc{max-width:calc((100% - 60px) / 6 * 3 + 24px)}
 </style>
 </head>
 <body>
 <div class="tool">
   <span class="scr" data-g="b"><button id="scrBtnb" onclick="openScr('b')"><b>Бонусы</b><span id="scrNameb">1. Отыгрывается + следующие</span><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6l4 4 4-4"/></svg></button></span>
   <span class="scr" data-g="c"><button id="scrBtnc" onclick="openScr('c')"><b>Клуб</b><span id="scrNamec">Выбрать экран</span><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6l4 4 4-4"/></svg></button></span>
-  <span><b>Ширина</b><span class="seg" id="w"><button data-v="1440" class="on">ПК</button><button data-v="820">iPad</button><button data-v="390">Телефон</button><button data-v="1920" hidden>1920</button><button data-v="2560" hidden>2560</button></span></span>
+  <span><b>Ширина</b><span class="seg" id="w"><button data-v="1440" class="on">ПК 1440</button><button data-v="1920">1920</button><button data-v="2560">2560 / 4K</button><button data-v="820">iPad</button><button data-v="390">Телефон</button></span></span>
   <span id="curbox" hidden><b>Валюта примера</b><span class="seg" id="cur"><button data-v="USD" class="on">USD</button><button data-v="RUB">RUB</button><button data-v="BTC">BTC</button><button data-v="USDT" hidden>USDT</button></span></span>
   <span hidden><b>Поля админки</b><span class="seg" id="annot"><button data-v="off" class="on">Скрыть</button><button data-v="on">Показать</button></span></span>
 </div>
@@ -1994,7 +2059,7 @@ const PROMO_MSG={bad:"Не действует",exp:"Не действует",use
 const promoBox=(where="page")=>{const ok=PROMO.st==="ok"||PROMO.st==="inst",err=PROMO.st&&!ok;
   return `<div class="${where==="dlg"?"pw-d":"pw"} ${err?"err":""} ${ok?"good":""} ${where}"><div class="promo2 ${err?"err":""} ${ok?"good":""} ${where}" data-f="Промокод (новое поле админки: код → шаблон бонуса)">
   ${where==="dlg"?"":`<div class="pstub">${ASSET.promocode?`<img class="art" src="${ASSET.promocode}" alt="">`:""}</div>`}
-  <div class="pbody">
+  <div class="pbody">${where==="page"?`<b class="ptl">Промокод</b>`:""}
     <div class="pr"><div class="pin"><input id="pc-${where}" aria-label="Промокод" placeholder="Введите промокод" value="${PROMO.v}" autocomplete="off" spellcheck="false" ${ok?"readonly":""} oninput="PROMO.v=this.value.toUpperCase();this.value=PROMO.v;if(PROMO.st){PROMO.st='';const p=this.closest('.promo2');p.classList.remove('err','good');p.parentElement.classList.remove('err','good');p.querySelector('.pm').textContent=''}" onkeydown="if(event.key==='Enter')applyPromo('${where}')"><span class="pm" role="status">${err?PROMO_MSG[PROMO.st]:""}</span></div>
     ${ok?`<span class="pok" role="status">${I.tick}${PROMO_MSG[PROMO.st]}</span>`:`<button class="btn p" onclick="applyPromo('${where}')">Активировать</button>`}</div></div></div></div>`};
 function applyPromo(where){const c=(PROMO.v||"").trim();if(!c)return;
@@ -2110,13 +2175,13 @@ const faq=()=>`<h2 class="sh">Как работает бонус</h2><p class="s
 const ALL=["fri","ten","slots"]; /* 23.11: бонус уровня видят только игроки этого уровня. Игрок в примере Gold, новый игрок и гость без уровня. Иконка обычная, по типу бонуса */
 /* Промокод: первым, если нет активного бонуса и очереди; иначе сразу после них, перед пакетом */
 const promoSec=()=>`<section class="psec"><h2 class="sh">Промокод</h2>${promoBox("page")}</section>`;
-const page=(o={})=>{CUR=PC();const t=table();CUR=curNow();const c=catalog(o.keys||ALL,o);CUR=PC();return site(t+promoSec()+c,o)};
+const page=(o={})=>{CUR=PC();const t=table();CUR=curNow();const c=catalog(o.keys||ALL,o);CUR=PC();return site(`<div class="dash ${ST.act?"":"noa"} ${ST.act&&ST.queue.length?"":"noq"}">${t}${promoSec()}</div>`+c,o)}; /* 26.11: верх страницы = карточки сетки купонов (широкие экраны) */
 /* Гость: бонус за регистрацию: тот же купон, только широкий */
-const guestPage=()=>{const b=B.reg;return site(`<section class="panel acc tb gtb" data-f="Бонус за регистрацию: тот же блок, что активный бонус">
+const guestPage=()=>{const b=B.reg;return site(`<div class="dash g"><section class="panel acc tb gtb" data-f="Бонус за регистрацию: тот же блок, что активный бонус">
   <div class="ring"><span class="halo"></span>${art(b)}</div>
   <div class="tb-info"><span class="chip2 tbst" data-f="Триггер: регистрация">За регистрацию</span><div class="tb-amt" data-fit data-f="Сумма бонуса">${mh(b.val,"+")}</div><div class="tb-name" data-f="Название">${b.name}</div>
     <div class="tb-nums"><span>Вейджер <b data-f="Множитель отыгрыша">${wag(b)}</b></span></div></div>
-  <div class="tb-act"><button class="btn p lg glow" onclick="go('reg','reg')">Регистрация</button><div class="two"><button class="btn s">Войти</button>${ibtn("reg","guest","")}</div></div></section>`+catalog(["fri","ten","slots","gold","ruby"],{guest:1}),{guest:1})};
+  <div class="tb-act"><button class="btn p lg glow" onclick="go('reg','reg')">Регистрация</button><div class="two"><button class="btn s">Войти</button>${ibtn("reg","guest","")}</div></div></section></div>`+catalog(["fri","ten","slots","gold","ruby"],{guest:1}),{guest:1})};
 
 /* ── Плитка выбора (касса, регистрация): мини-купон ── */
 let CASH={A:50,sel:"none",keys:["w2","fri","ten","slots"],crypto:false};
