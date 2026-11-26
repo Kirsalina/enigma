@@ -1815,6 +1815,28 @@ body[data-g="b"] .states [data-g="c"],body[data-g="c"] .states [data-g="b"]{disp
 #frame.dk .main{width:100%;max-width:1300px;justify-self:center;box-sizing:border-box}
 #frame.dk .grid{grid-template-columns:repeat(var(--cols),minmax(0,1fr))}
 #frame.dk .cash-main>.step{max-width:966px}
+/* 26.11 (4) Широкий контент, 4 колонки: верх в две половины (.top2). Слева активный бонус, справа очередь и промокод.
+   Половина = 2 колонки купонов, правый край общий с купонами. Без длинных полос. */
+.top2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:40px;align-items:stretch}
+.top2>*,.top2 .rc>*{margin:0!important;min-width:0}
+.top2 .rc{display:flex;flex-direction:column;gap:12px}
+.top2 .rc>.nxp{flex:1}
+.top2:not(.noa) .rc>.psec>.sh{display:none}
+.top2.noa .rc>.psec>.sh{margin:0 0 16px!important}
+.top2>.tb{grid-template-columns:136px minmax(0,1fr)!important;grid-template-areas:"ring info" "act act"!important;row-gap:20px!important;column-gap:24px!important;align-content:center}
+.top2 .ring{width:136px;height:136px}.top2 .ring .art{width:80px!important;height:80px!important}
+.top2 .tb-act{display:grid!important;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-self:end;width:auto!important}
+.top2 .tb-act .two{display:flex;gap:8px}
+.top2 .tb-act>.btn.p,.top2 .tb-act .two .btn{height:48px!important}
+.top2 .tb-act .two .btn.sq{width:48px!important;min-width:48px}
+/* нет очереди: промокод справа на всю высоту активного, содержимое по центру */
+.top2.noq:not(.noa) .rc>.psec{flex:1;display:flex}
+.top2.noq:not(.noa) .rc>.psec>.pw{flex:1;display:flex}
+.top2.noq:not(.noa) .rc>.psec>.pw>.promo2{flex:1;align-items:stretch}
+.top2.noq:not(.noa) .promo2 .pstub{display:flex;align-items:center;justify-content:center;height:auto}
+.top2.noq:not(.noa) .promo2 .pbody{display:flex;flex-direction:column;justify-content:center}
+/* гость: регистрация в левой половине, кнопки строкой снизу */
+.top2.g>.gtb .tb-act{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto}
 </style>
 </head>
 <body>
@@ -2131,13 +2153,18 @@ const faq=()=>`<h2 class="sh">Как работает бонус</h2><p class="s
 const ALL=["fri","ten","slots"]; /* 23.11: бонус уровня видят только игроки этого уровня. Игрок в примере Gold, новый игрок и гость без уровня. Иконка обычная, по типу бонуса */
 /* Промокод: первым, если нет активного бонуса и очереди; иначе сразу после них, перед пакетом */
 const promoSec=()=>`<section class="psec"><h2 class="sh">Промокод</h2>${promoBox("page")}</section>`;
-const page=(o={})=>{CUR=PC();const t=table();CUR=curNow();const c=catalog(o.keys||ALL,o);CUR=PC();return site(t+promoSec()+c,o)};
+const page=(o={})=>{CUR=PC();const t=table();CUR=curNow();const c=catalog(o.keys||ALL,o);CUR=PC();return site(top2(t,promoSec())+c,o)};
+/* 26.11 Широкий контент (4 колонки, 1236): верх в две половины. Слева активный бонус, справа очередь и под ней промокод.
+   Нет очереди: справа только промокод. Нет активного: промокод в левой половине. На 3 колонках (1440 с чатом) как было: блоки друг под другом */
+const W4=()=>COLS(document.getElementById("frame").dataset.w)>=4;
+const top2=(t,p)=>{if(!W4())return t+p;const i=t.indexOf('<section class="panel nxp'),tb=i<0?t:t.slice(0,i),nx=i<0?"":t.slice(i);
+  return `<div class="top2${t?"":" noa"}${nx?"":" noq"}">${tb}<div class="rc">${nx}${p}</div></div>`};
 /* Гость: бонус за регистрацию: тот же купон, только широкий */
-const guestPage=()=>{const b=B.reg;return site(`<section class="panel acc tb gtb" data-f="Бонус за регистрацию: тот же блок, что активный бонус">
+const guestPage=()=>{const b=B.reg;return site(`${W4()?'<div class="top2 g">':""}<section class="panel acc tb gtb" data-f="Бонус за регистрацию: тот же блок, что активный бонус">
   <div class="ring"><span class="halo"></span>${art(b)}</div>
   <div class="tb-info"><span class="chip2 tbst" data-f="Триггер: регистрация">За регистрацию</span><div class="tb-amt" data-fit data-f="Сумма бонуса">${mh(b.val,"+")}</div><div class="tb-name" data-f="Название">${b.name}</div>
     <div class="tb-nums"><span>Вейджер <b data-f="Множитель отыгрыша">${wag(b)}</b></span></div></div>
-  <div class="tb-act"><button class="btn p lg glow" onclick="go('reg','reg')">Регистрация</button><div class="two"><button class="btn s">Войти</button>${ibtn("reg","guest","")}</div></div></section>`+catalog(["fri","ten","slots","gold","ruby"],{guest:1}),{guest:1})};
+  <div class="tb-act"><button class="btn p lg glow" onclick="go('reg','reg')">Регистрация</button><div class="two"><button class="btn s">Войти</button>${ibtn("reg","guest","")}</div></div></section>${W4()?"</div>":""}`+catalog(["fri","ten","slots","gold","ruby"],{guest:1}),{guest:1})};
 
 /* ── Плитка выбора (касса, регистрация): мини-купон ── */
 let CASH={A:50,sel:"none",keys:["w2","fri","ten","slots"],crypto:false};
