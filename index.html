@@ -1865,6 +1865,24 @@ body[data-g="b"] .states [data-g="c"],body[data-g="c"] .states [data-g="b"]{disp
 /* 26.11 Клуб v2: шапка уровня (.clh) той же ширины, что шкала и «Что даёт» (3 колонки) */
 .f1920 .tb.clh,.f1920 .lvc{max-width:calc((100% - 48px) / 5 * 3 + 24px)}
 .f2560 .tb.clh,.f2560 .lvc{max-width:calc((100% - 60px) / 6 * 3 + 24px)}
+/* ══ 26.11 (2) Колонки от ширины контента, чат можно закрыть ══
+   JS ставит на кадр ПК класс .dk, data-c и --cols (= floor((контент + 12) / 282), минимум 3), --hc = max(4, cols).
+   Для фронта то же самое делается container query по ширине контента: 3 колонки от 834, 4 от 1116, 5 от 1398, 6 от 1680, 7 от 1962, 8 от 2244 (n·282 − 12). */
+#frame.nochat .shell{grid-template-columns:minmax(0,1fr)}#frame.nochat .shell>.chat{display:none}
+#frame.dk .grid{grid-template-columns:repeat(var(--cols),minmax(0,1fr))}
+#frame.dk .how2{grid-template-columns:repeat(var(--hc),minmax(0,1fr))}
+#frame.dk .dash{grid-template-columns:repeat(var(--cols),minmax(0,1fr));grid-template-areas:none}
+#frame.dk .dash>.tb{grid-area:auto;grid-column:1/3;grid-row:1}
+#frame.dk .dash>.psec{grid-area:auto;grid-column:3/4;grid-row:1}
+#frame.dk .dash>.nxp{grid-area:auto;grid-column:1/3;grid-row:2;min-height:0}
+#frame.dk .dash.noa>.psec{grid-column:1/2}
+#frame.dk:not([data-c="3"]):not([data-c="4"]) .dash>.nxp{grid-column:3/5;grid-row:1;min-height:282px}
+#frame.dk:not([data-c="3"]):not([data-c="4"]) .dash:not(.noq)>.psec{grid-column:5/6}
+#frame.dk .faq,#frame.dk .hist,#frame.dk .clubtop,#frame.dk .lvp,#frame.dk .tb.clh,#frame.dk .lvc{max-width:calc((100% - (var(--cols) - 1) * 12px) / var(--cols) * 3 + 24px)}
+#frame.dk .sech.has{justify-content:space-between;gap:16px}
+#frame.dk:not([data-c="3"]) .sech.has{justify-content:flex-start;gap:32px}
+#frame.dk .cash-main>.step{max-width:966px}
+#frame.dk .rhero+.dash>.psec:first-child{margin-top:0!important} /* нет активного: промокод первый, отступ даёт сам .dash (40) */
 </style>
 </head>
 <body>
@@ -1872,6 +1890,7 @@ body[data-g="b"] .states [data-g="c"],body[data-g="c"] .states [data-g="b"]{disp
   <span class="scr" data-g="b"><button id="scrBtnb" onclick="openScr('b')"><b>Бонусы</b><span id="scrNameb">1. Отыгрывается + следующие</span><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6l4 4 4-4"/></svg></button></span>
   <span class="scr" data-g="c"><button id="scrBtnc" onclick="openScr('c')"><b>Клуб</b><span id="scrNamec">Выбрать экран</span><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6l4 4 4-4"/></svg></button></span>
   <span><b>Ширина</b><span class="seg" id="w"><button data-v="1440" class="on">ПК 1440</button><button data-v="1920">1920</button><button data-v="2560">2560 / 4K</button><button data-v="820">iPad</button><button data-v="390">Телефон</button></span></span>
+  <span id="chatbox"><b>Чат</b><span class="seg" id="chat"><button data-v="on" class="on">Открыт</button><button data-v="off">Закрыт</button></span></span>
   <span id="curbox" hidden><b>Валюта примера</b><span class="seg" id="cur"><button data-v="USD" class="on">USD</button><button data-v="RUB">RUB</button><button data-v="BTC">BTC</button><button data-v="USDT" hidden>USDT</button></span></span>
   <span hidden><b>Поля админки</b><span class="seg" id="annot"><button data-v="off" class="on">Скрыть</button><button data-v="on">Показать</button></span></span>
 </div>
@@ -2086,9 +2105,13 @@ function sortBonuses(keys){
 const zRow=list=>Math.max(1,...list.map(b=>zOf(amtH(b))));
 /* «Показать ещё» после двух рядов: число карточек зависит от колонок на этой ширине */
 const PER={390:2,820:4,1440:6,1920:10,2560:12};
+/* 26.11 Колонки на ПК считаются от ширины контента, а не экрана: чат можно закрыть.
+   Контент = экран − чат 410 (если открыт) − поля 64. Колонок = floor((контент + 12) / 282), минимум 3. Карточка ≥ 270, зазор 12 */
+let CHAT=true;
+const COLS=w=>{w=+w;if(w<1440)return 0;const mw=w-(CHAT?410:0)-64;return Math.max(3,Math.floor((mw+12)/282))};
 function cardCur(b,o){const keep=CUR;if(!forCur(b,walletCur()))CUR=b.curs[0];const h=card(b,o);CUR=keep;return h}
 function grid(list,o={}){
-  const n=PER[document.getElementById("frame").dataset.w]||6, cut=o.cut!==0&&list.length>n+1; /* один купон не прячем */
+  const n=(COLS(document.getElementById("frame").dataset.w)*2)||PER[document.getElementById("frame").dataset.w]||6, cut=o.cut!==0&&list.length>n+1; /* один купон не прячем */
   return `<div class="grid ${cut?"cut":""}" data-z="1">${list.map((b,i)=>cardCur(b,o).replace('<div class="cw ',`<div class="cw ${cut&&i>=n?"hid ":""}`)).join("")}</div>
   ${cut?`${moreBtn("const g=this.parentElement.previousElementSibling;g.classList.toggle('cut');this.textContent=g.classList.contains('cut')?'Показать ещё':'Свернуть';fitAll()")}`:""}`;
 }
@@ -2514,6 +2537,8 @@ function go(s,arg,reset){
 function draw(fresh,first){
   const f=document.getElementById("frame"); CUR=PC();
   f.className="frame f"+f.dataset.w+(first?" first":"");
+  {const c=COLS(f.dataset.w);if(c){f.classList.add("dk");if(!CHAT)f.classList.add("nochat");f.dataset.c=c;f.style.setProperty("--cols",c);f.style.setProperty("--hc",Math.max(4,c))}else{delete f.dataset.c;f.style.removeProperty("--cols");f.style.removeProperty("--hc")}
+   const cb=document.getElementById("chatbox");if(cb)cb.hidden=!c}
   f.innerHTML=cur.startsWith("cash")?(fresh?S[cur].r(ARG):cashier()):S[cur].r(ARG);
   fitAll();
   if(document.getElementById("ntf")) placeNtf(); else document.getElementById("ntfbg")?.remove();
@@ -2531,6 +2556,7 @@ function fitAll(){
   document.querySelectorAll("#frame [data-fit], #dlg [data-fit]").forEach(e=>{e.style.fontSize="";const base=parseFloat(getComputedStyle(e).fontSize);
     for(const k of [1,.86,.74,.64,.56]){e.style.fontSize=(base*k).toFixed(1)+"px";if(!over(e))break}});
 }
+document.getElementById("chat").onclick=e=>{const b=e.target.closest("button");if(!b)return;document.querySelectorAll("#chat button").forEach(x=>x.classList.toggle("on",x===b));CHAT=b.dataset.v==="on";draw(true);S[cur].after?.()};
 document.getElementById("w").onclick=e=>{const b=e.target.closest("button");if(!b)return;document.querySelectorAll("#w button").forEach(x=>x.classList.toggle("on",x===b));document.getElementById("frame").dataset.w=b.dataset.v;draw(true);S[cur].after?.()};
 document.getElementById("cur").onclick=e=>{const b=e.target.closest("button");if(!b)return;document.querySelectorAll("#cur button").forEach(x=>x.classList.toggle("on",x===b));PAGECUR=b.dataset.v;PF=null;draw(true);S[cur].after?.()};
 document.getElementById("annot").onclick=e=>{const b=e.target.closest("button");if(!b)return;document.querySelectorAll("#annot button").forEach(x=>x.classList.toggle("on",x===b));document.body.classList.toggle("annot",b.dataset.v==="on")};
