@@ -2144,6 +2144,11 @@ body[data-g="b"] .states [data-g="c"],body[data-g="c"] .states [data-g="b"]{disp
 .nb-promo.panel{padding:16px}
 .pw2.cash{max-width:520px;margin:0 0 12px}
 .nb-st{grid-template-columns:minmax(0,1fr)}.nb-st>*{min-width:0;max-width:100%;box-sizing:border-box}
+/* 27.11: «Отыграно X из Y» и дата в колонке текста под названием, выровнены по тексту, а не под кольцом */
+.nb-ai .nb-pr{display:flex;flex-wrap:wrap;justify-content:flex-start;gap:2px 12px;margin-top:6px;font-size:13px;line-height:20px;color:var(--muted)}
+.nb-ai .nb-pr .nw{white-space:nowrap}
+.nb-ai .nb-pr .d{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.nb-ah{align-items:center}
 </style>
 </head>
 <body>
@@ -2869,8 +2874,7 @@ function nbPage(o={},cols){const fw=+document.getElementById("frame").dataset.w,
   cw=fw-(dk&&CHAT?410:0)-2*mx, lw=cw>=1100?420:360, two=fw>=600, rw=two?cw-lw-24:cw, rcW=Math.max(1,Math.floor((rw+12)/282)), nar=two&&rw<560;
   CUR=PC();const k=ST.act,a=k?PB[k]:null,b=k?B[k]:null,p=k?Math.min(100,Math.round(a.done/a.need*100)):0,q=ST.queue||[];
   const hd=(t,x="",sub="")=>`<div class="nb-hd"><div><h2>${t}</h2>${sub?`<p>${sub}</p>`:""}</div>${x}</div>`;
-  const act=!k?"":`<section class="panel nb-act"><div class="nb-ah">${ring(b,p)}<div class="nb-ai"><span class="chip2 tbst">Отыгрывается</span><div class="tb-amt" data-fit>${mh(a.amt)}</div><div class="tb-name">${b.name}</div></div></div>
-    <div class="nb-pr"><span>Отыграно <b>${m(a.done)}</b> из ${m(a.need)}</span>${a.dl?`<span class="d">${I.clock}до ${a.dl}</span>`:""}</div>
+  const act=!k?"":`<section class="panel nb-act"><div class="nb-ah">${ring(b,p)}<div class="nb-ai"><span class="chip2 tbst">Отыгрывается</span><div class="tb-amt" data-fit>${mh(a.amt)}</div><div class="tb-name">${b.name}</div><div class="nb-pr"><span>Отыграно <b>${m(a.done)}</b> <span class="nw">из ${m(a.need)}</span></span>${a.dl?`<span class="d">${I.clock}до ${a.dl}</span>`:""}</div></div></div>
     <div class="nb-btns"><button class="btn p" onclick="go('main')">Играть</button><button class="btn s" onclick="openCancel('${k}')">Отменить</button>${ibtn(k,"view","")}</div></section>`;
   const qz=q.length?`<section class="panel nb-q ${q.length>3?"cut":""}"><span class="eyebrow">Следующие</span>${q.map(nxRow).join("")}${q.length>3?moreBtn("const s=this.closest('.nb-q');s.classList.toggle('cut');this.textContent=s.classList.contains('cut')?'Показать ещё':'Свернуть'"):""}</section>`:"";
   CUR=curNow();
