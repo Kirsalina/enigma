@@ -2103,6 +2103,47 @@ body[data-g="b"] .states [data-g="c"],body[data-g="c"] .states [data-g="b"]{disp
 .nb-promo .pw.err .promo2 .pin::before{filter:none}
 .nb-promo .pw,.nb-promo .pw>.promo2{-webkit-mask:none!important;mask:none!important}
 .nb-promo .pw .promo2 .pm,.nb-promo .pw .promo2 .pm:empty{display:block!important;min-height:20px!important;height:20px}
+/* ── 27.11 вечер, раунд 2 ── */
+/* шапки колонок: только заголовок; переключатель в строке заголовка справа */
+.nb .nb-hd,.nb.dk2 .nb-me>.nb-hd,.nb.dk2 .nb-av>.nb-hd,.nb.nar .nb-hd{height:auto!important;min-height:40px;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;flex-wrap:wrap;gap:8px 16px;margin:0 0 16px}
+.nb-hd p{display:block!important}
+.nb-hd .curf2{align-self:center!important;margin:0!important}
+.nb.nar.dk2 .nb-me>.nb-hd,.nb.nar.dk2 .nb-av>.nb-hd{min-height:96px;align-items:flex-start!important;align-content:flex-start}
+.nb-how .nb-hd,.nb-fq .nb-hd{min-height:0}
+.nb.mb .nb-hd{flex-direction:column!important;align-items:flex-start!important}
+/* левая колонка липкая: идёт вместе со страницей, пустота под ней — обычное поле сайдбара */
+.nb.dk2{grid-template-areas:none!important;grid-template-rows:auto!important}
+.nb.dk2 .nb-me{grid-area:auto!important;position:sticky;top:16px;align-self:start}
+.nb.dk2 .nb-av{grid-area:auto!important}
+.nb-av .nb-how{margin-top:48px}
+.nb-av .nb-fq{margin-top:48px}
+.nb-fq.two .faq{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:40px}
+.nb-fq .faq{padding:4px 20px}
+/* кольцо: ровный диск внутри, свет за картинкой как на купоне */
+.nb-ah .ring::before{content:"";position:absolute;inset:9px;border-radius:50%;background:radial-gradient(circle at 50% 45%,rgba(163,132,217,.20),rgba(163,132,217,.04) 70%)}
+.nb-ah .ring .art{position:relative;filter:none!important}
+.nb-ah .ring .pc{bottom:-8px}
+.nb-art{background:radial-gradient(circle at 50% 45%,rgba(163,132,217,.20),rgba(163,132,217,.04) 70%)!important;border-radius:50%!important}
+/* нет активного */
+.nb-none{color:var(--muted)!important}
+.nb-empty .nb-btns .btn.p{flex:1}
+/* нет бонусов в валюте */
+.nb-none-av{display:flex;align-items:center;gap:16px;padding:16px 20px}
+.nb-none-av .art{width:56px;height:56px}
+.nb-none-av>div{flex:1;font-size:15px;line-height:20px}.nb-none-av b{font-weight:600;color:var(--title)}
+.nb-none-av .btn{height:36px;padding:0 16px}
+.f390 .nb-none-av .btn,.f820 .nb-none-av .btn{height:44px}
+/* промокод: поле + кнопка, одна строка, ответ цветом рамки и тостом */
+.pw2{display:flex;gap:8px;align-items:center}
+.pw2 input{flex:1 1 auto;min-width:0;height:44px;padding:0 14px;border-radius:8px;border:0;background:rgba(233,233,237,.04);box-shadow:inset 0 0 0 1px rgba(150,144,171,.32);color:var(--title);font:inherit;font-size:15px;font-weight:600;letter-spacing:.04em;outline:none}
+.pw2 input::placeholder{color:var(--muted);font-weight:400;letter-spacing:0}
+.pw2 input:focus{box-shadow:inset 0 0 0 1px #C6ABFC}
+.pw2.err input{box-shadow:inset 0 0 0 1px #F28D92}
+.pw2.good input{box-shadow:inset 0 0 0 1px #4EC98A}
+.pw2 .btn{flex:none;height:44px;padding:0 18px}
+.nb-promo.panel{padding:16px}
+.pw2.cash{max-width:520px;margin:0 0 12px}
+.nb-st{grid-template-columns:minmax(0,1fr)}.nb-st>*{min-width:0;max-width:100%;box-sizing:border-box}
 </style>
 </head>
 <body>
@@ -2296,18 +2337,19 @@ function card(b,o={}){
 let PROMO={v:"",st:""};
 const PROMO_MSG={bad:"Не действует",exp:"Не действует",used:"Не действует",lvl:"Не действует",cur:"Не действует",ok:"Бонус добавлен",inst:"Бонус начислен"}; /* 26.11: вместо «Код принят» — что произошло: купон добавлен в список / бонус начислен или встал в очередь */
 const promoBox=(where="page")=>{const ok=PROMO.st==="ok"||PROMO.st==="inst",err=PROMO.st&&!ok;
-  return `<div class="${where==="dlg"?"pw-d":"pw"} ${err?"err":""} ${ok?"good":""} ${where}"><div class="promo2 ${err?"err":""} ${ok?"good":""} ${where}" data-f="Промокод (новое поле админки: код → шаблон бонуса)">
-  ${where==="dlg"?"":`<div class="pstub">${ASSET.promocode?`<img class="art" src="${ASSET.promocode}" alt="">`:""}</div>`}
-  <div class="pbody">
-    <div class="pr"><div class="pin"><input id="pc-${where}" aria-label="Промокод" placeholder="Введите промокод" value="${PROMO.v}" maxlength="20" autocomplete="off" spellcheck="false" ${ok?"readonly":""} oninput="PROMO.v=this.value.toUpperCase();this.value=PROMO.v;if(PROMO.st){PROMO.st='';const p=this.closest('.promo2');p.classList.remove('err','good');p.parentElement.classList.remove('err','good');p.querySelector('.pm').textContent=''}" onkeydown="if(event.key==='Enter')applyPromo('${where}')"><span class="pm" role="status">${err?PROMO_MSG[PROMO.st]:""}</span></div>
-    ${ok?`<span class="pok" role="status">${I.tick}${PROMO.st==="inst"&&ST.act!=="promo10"?"Бонус в очереди":PROMO_MSG[PROMO.st]}</span>`:`<button class="btn p" onclick="applyPromo('${where}')">Активировать</button>`}</div></div></div></div>`};
+  /* 27.11: поле + «Активировать» в одну строку. Ответ: цвет рамки поля + тост «Промокод активирован…» / «Промокод не действует». Кнопка не меняется, под полем ничего нет, высота постоянная */
+  return `<div class="pw2 ${where} ${err?"err":""} ${ok?"good":""}" data-f="Промокод (новое поле админки: код → шаблон бонуса)"><input id="pc-${where}" aria-label="Промокод" placeholder="Введите промокод" value="${PROMO.v}" maxlength="20" autocomplete="off" spellcheck="false" oninput="PROMO.v=this.value.toUpperCase();this.value=PROMO.v;if(PROMO.st){PROMO.st='';this.parentElement.classList.remove('err','good')}" onkeydown="if(event.key==='Enter')applyPromo('${where}')"><button class="btn p" onclick="applyPromo('${where}')">Активировать</button></div>`};
 function applyPromo(where){const c=(PROMO.v||"").trim();if(!c)return;
   const map={OLD:"exp",USED:"used",VIP:"lvl",BTCONLY:"cur"};
   if(c==="WELCOME30"){PROMO.st="ok";if(!ST.extra)ST.extra=[];if(!ST.extra.includes("promo"))ST.extra.unshift("promo");if(where==="cash")CASH.sel="promo";}
   else if(c==="FREE10"){PROMO.st="inst";if(!ST.act)ST.act="promo10";else if(!ST.queue.includes("promo10"))ST.queue.push("promo10")}
   else PROMO.st=map[c]||"bad";
   const el0=document.getElementById("pc-"+where), y0=el0?el0.getBoundingClientRect().top:0;
-  draw(); if(where==="dlg"){openPromoDlg();return}
+  draw(); if(where==="dlg"){openPromoDlg();}
+  if(PROMO.st==="ok") showToast("Промокод активирован. Бонус добавлен в список");
+  else if(PROMO.st==="inst") showToast(ST.act==="promo10"?"Промокод активирован. Бонус начислен":"Промокод активирован. Бонус в очереди");
+  else showToast("Промокод не действует",4000,"info");
+  if(where==="dlg")return;
   const el1=document.getElementById("pc-"+where); if(el1){const d=el1.getBoundingClientRect().top-y0;if(d){let p=el1.parentElement;while(p&&p!==document.body){if(p.scrollHeight>p.clientHeight+1&&/(auto|scroll)/.test(getComputedStyle(p).overflowY)){p.scrollTop+=d;break}p=p.parentElement}window.scrollBy(0,el1.getBoundingClientRect().top-y0)}}setTimeout(()=>document.getElementById("pc-"+where)?.focus({preventScroll:true}),0)}
 /* Валюта страницы бонусов: кошельки игрока + «Все валюты». Нет поля валют: бонус для всех */
 let PF=null, WALLETS=null;
@@ -2340,7 +2382,7 @@ function grid(list,o={}){
 }
 const GLYPH={USD:"$",EUR:"€",RUB:"₽",USDT:"₮",BTC:"₿"};
 const curSw=keys=>{const my=WALLETS?WALLETS[1]||WALLETS[0]:PC(), all=PF==="all";
-  return `<span class="segm curf2" role="tablist" aria-label="Валюта бонусов" data-f="Валюта кошелька игрока или все"><button role="tab" aria-selected="${!all}" class="${all?"":"on"}" onclick="PF=${WALLETS?`'${my}'`:"null"};draw()">${I.wallet}Мой кошелёк <span class="c">${code(my)}</span></button><button role="tab" aria-selected="${all}" class="${all?"on":""}" onclick="PF='all';draw()">${I.list}Все валюты</button></span>`};
+  return `<span class="segm curf2" role="tablist" aria-label="Валюта бонусов" data-f="Валюта кошелька игрока или все"><button role="tab" aria-selected="${!all}" class="${all?"":"on"}" onclick="PF=${WALLETS?`'${my}'`:"null"};draw()">Мой кошелёк <span class="c">${code(my)}</span></button><button role="tab" aria-selected="${all}" class="${all?"on":""}" onclick="PF='all';draw()">Все валюты</button></span>`};
 function catalog(keys,o={}){
   const all=[...(ST.extra||[]).map(k=>B[k]),...sortBonuses(keys)], open=all.filter(b=>!b.lvl||(!o.guest&&fits(b))), club=[]; /* 20.11: бонусы чужого уровня не показываем никому (сегментация) */
   const wel=forCur(B.w1,walletCur())&&welLeft().length>0; /* пакет не зависит от переключателя: ничего не прыгает */
@@ -2477,7 +2519,7 @@ function tile(k,pick="pickOpt",sel=CASH.sel,A=CASH.A){
       <span class="d">${short?`<span class="need" data-f="Мин. депозит: суммы не хватает">Депозит от ${m(b.min)}</span>`:`${cr&&b.min?`<span data-f="Мин. депозит">Депозит от ${num(b.min)}</span>`:""}<span data-f="Множитель отыгрыша">Вейджер ${wag(b)}</span>`}</span></div>
     <div class="side"><button class="btn s sm sq" aria-label="Условия: ${b.name}" title="Условия" onclick="event.preventDefault();event.stopPropagation();openTerms('${k}','${pick==="setReg"?"reg":"pick"}')">${I.info}</button><span class="chk">${I.tick}</span></div></div></label>`;
 }
-const opts=()=>`<div class="tiles" id="opts">${promoBox("cash")}${tile("none")}${CASH.keys.map(k=>tile(k)).join("")}</div>`;
+const opts=()=>`${promoBox("cash")}<div class="tiles" id="opts">${tile("none")}${CASH.keys.map(k=>tile(k)).join("")}</div>`;
 function pickOpt(k){CASH.sel=k;refreshCash()}
 function setAmt(a){CASH.A=a;refreshCash()}
 /* Поднять сумму до минимума бонуса и выбрать его */
@@ -2820,42 +2862,43 @@ document.getElementById("annot").onclick=e=>{const b=e.target.closest("button");
 document.getElementById("states").onclick=e=>{const b=e.target.closest("button");if(b)go(b.dataset.s,undefined,true)};
 go("main",undefined,true);
 
-/* ── КОНЦЕПТ «Мои бонусы + Доступные» (27.11, выровненный) ──
-   Компьютер: две колонки под шапкой. Слева 420 px: «Мои бонусы» (активный, промокод, очередь), под ними «Частые вопросы».
-   Справа резиновая сетка: «Доступные бонусы» (пакет + к депозиту одной сеткой), под ней «Как работает». Все колонки сетки одной ширины,
-   «Как работает» стоит в тех же колонках, что и купоны. Телефон и iPad: всё в одну колонку, порядок: мои, доступные, как работает, вопросы */
+/* ── КОНЦЕПТ «Мои бонусы + Доступные» (27.11, вечер). Номера решений: DECISIONS.md ──
+   D12 компьютер и iPad: две колонки. Слева «Мои бонусы» (липкая, растёт только вниз), справа доступные + «Как работает» + вопросы. Телефон: одна колонка.
+   D15 шапки колонок: только заголовки; переключатель валют в строке заголовка справа (на узкой колонке переносится под заголовок, левая шапка той же высоты). */
 function nbPage(o={},cols){const fw=+document.getElementById("frame").dataset.w, dk=!!cols, mx=dk?MX(fw):(fw<600?16:32),
-  cw=fw-(dk&&CHAT?410:0)-2*mx, lw=cw>=1100?420:360, two=fw>=600, rw=two?cw-lw-24:cw, rcW=Math.max(1,Math.floor((rw+12)/282)), nar=two&&rw<520;
-  /* 27.11: две колонки на всех ширинах, кроме телефона. Слева 420 (на iPad 360), справа сколько влезет, хоть 1 купон */
-  /* две колонки, только если справа влезает хотя бы 2 купона; иначе (1440 с чатом, iPad, телефон) всё друг под другом */
+  cw=fw-(dk&&CHAT?410:0)-2*mx, lw=cw>=1100?420:360, two=fw>=600, rw=two?cw-lw-24:cw, rcW=Math.max(1,Math.floor((rw+12)/282)), nar=two&&rw<560;
   CUR=PC();const k=ST.act,a=k?PB[k]:null,b=k?B[k]:null,p=k?Math.min(100,Math.round(a.done/a.need*100)):0,q=ST.queue||[];
+  const hd=(t,x="",sub="")=>`<div class="nb-hd"><div><h2>${t}</h2>${sub?`<p>${sub}</p>`:""}</div>${x}</div>`;
   const act=!k?"":`<section class="panel nb-act"><div class="nb-ah">${ring(b,p)}<div class="nb-ai"><span class="chip2 tbst">Отыгрывается</span><div class="tb-amt" data-fit>${mh(a.amt)}</div><div class="tb-name">${b.name}</div></div></div>
-    <div class="nb-prog"><div class="nb-pr"><span>Отыграно <b>${m(a.done)}</b> из ${m(a.need)}</span>${a.dl?`<span class="d">${I.clock}до ${a.dl}</span>`:""}</div></div>
+    <div class="nb-pr"><span>Отыграно <b>${m(a.done)}</b> из ${m(a.need)}</span>${a.dl?`<span class="d">${I.clock}до ${a.dl}</span>`:""}</div>
     <div class="nb-btns"><button class="btn p" onclick="go('main')">Играть</button><button class="btn s" onclick="openCancel('${k}')">Отменить</button>${ibtn(k,"view","")}</div></section>`;
   const qz=q.length?`<section class="panel nb-q ${q.length>3?"cut":""}"><span class="eyebrow">Следующие</span>${q.map(nxRow).join("")}${q.length>3?moreBtn("const s=this.closest('.nb-q');s.classList.toggle('cut');this.textContent=s.classList.contains('cut')?'Показать ещё':'Свернуть'"):""}</section>`:"";
-  const hd=(t,sub,x="")=>`<div class="nb-hd"><div><h2>${t}</h2><p>${sub}</p></div>${x}</div>`;
-  /* гость: бонус за регистрацию тем же блоком, что активный. Нет активного: пустой блок с подсказкой */
-  const rg=B.reg, guestC=`<section class="panel nb-act nb-guest"><div class="nb-ah"><div class="nb-art">${art(rg)}</div><div class="nb-ai"><span class="chip2 tbst">За регистрацию</span><div class="tb-amt" data-fit>${mh(rg.val,"+")}</div><div class="tb-name">${rg.name}</div></div></div>
-    <div class="nb-btns">${ibtn("reg","guest","")}<button class="btn p" onclick="go('reg','reg')">Получить</button></div></section>`;
-  const emptyC=`<section class="panel nb-act nb-empty"><div class="nb-ah"><div class="nb-art"><img class="art" src="${ASSET.empty}" alt=""></div><div class="nb-ai"><div class="tb-name">Активного бонуса нет</div><p>Пополните счёт и заберите бонус к депозиту</p></div></div>
-    <div class="nb-btns"><button class="btn p" onclick="go('cash')">Пополнить</button></div></section>`;
-  const me=o.guest?`<div class="nb-me">${hd("Бонус за регистрацию","Зарегистрируйтесь, и он сразу начнёт отыгрываться")}<div class="nb-st">${guestC}</div></div>`
-    :`<div class="nb-me">${hd("Мои бонусы","Отыгрывается один, остальные ждут очереди")}<div class="nb-st">${act||emptyC}<div class="nb-promo">${promoBox("page")}</div>${qz}</div></div>`;
   CUR=curNow();
   const all=[...(ST.extra||[]).map(k=>B[k]),...sortBonuses(o.keys||ALL)], dep=all.filter(x=>!x.lvl||fits(x)), ks=welLeft(), wel=forCur(B.w1,walletCur())&&ks.length>0;
   const cards=[...(wel?ks.map(([kk,i])=>{const [cls,ac,view]=stepState(kk,i);return card(B[kk],{cls,act:ac,view,guest:o.guest})}):[]),...dep.map(x=>o.guest?card(x,{guest:1}):cardCur(x,o))];
-  /* колонок по ширине; если купонов меньше, они делят ширину поровну (как у Epic), но купон не шире 420 */
-  const rc=cards.length<rcW&&(rw+12)/cards.length-12<=420?cards.length:rcW, hc=Math.min(4,rcW);
-  const n=Math.max(4,rc*2), cut=cards.length>n+1;
-  const F=faq(), fi=F.indexOf('<h2 class="sh fqh"'), how=F.slice(0,fi), fq=F.slice(fi);
-  const hcol=rw>=1100?4:rw>=520?2:1;
-  const howH=hd("Как работает бонус","Отыграли, и деньги ваши")+`<div class="nb-steps" style="--hc:${hcol}">${HOW.map(([a,t,d],i)=>`<div class="nst"><div class="nsi"><img class="art" src="${ASSET[a]}" alt=""><span class="hn">${i+1}</span></div><div class="nsb"><b>${t}</b><span>${d}</span></div></div>`).join("")}</div>`;
-  const av=`<div class="nb-av">${hd("Доступные бонусы","Приветственный пакет и бонусы к депозиту",curSw(o.keys||ALL))}
-    <div class="grid nb-grid ${cut?"cut":""}" data-z="1">${cards.map((h,i)=>h.replace('<div class="cw ',`<div class="cw ${cut&&i>=n?"hid ":""}`)).join("")}</div>${cut?moreBtn("const g=this.parentElement.previousElementSibling;g.classList.toggle('cut');this.textContent=g.classList.contains('cut')?'Показать ещё':'Свернуть';fitAll()"):""}
-    <div class="nb-how">${howH}</div></div>`;
-  const fqH=fq.replace(/<h2 class="sh fqh">[\s\S]*?<\/h2>/,hd("Частые вопросы","Коротко о вейджере, сроках и очереди"));
+  /* D21: нет активного — мотивация: первый доступный бонус и кнопка в кассу */
+  const first=wel?B[ks[0][0]]:dep.find(x=>!x.future&&!(x.lvl&&!fits(x)));
+  const emptyC=`<section class="panel nb-act nb-empty"><div class="nb-ah"><div class="nb-art">${first?art(first):`<img class="art" src="${ASSET.empty}" alt="">`}</div><div class="nb-ai"><span class="chip2 tbst nb-none">Бонуса нет</span>${first?`<div class="tb-amt" data-fit>${amtH(first)}</div><div class="tb-name">${first.name}</div>`:`<div class="tb-name">Активного бонуса нет</div>`}</div></div>
+    <div class="nb-btns"><button class="btn p" onclick="go('cash')">${first?"Пополнить и получить":"Пополнить"}</button>${first?ibtn(key(first),"",""):""}</div></section>`;
   CUR=PC();
-  return site(`<div class="nb ${two?"dk2":"mb"} ${nar?"nar":""} ${lw<400||!two?"cp":""}" style="--rc:${rc};--lw:${lw}px">${me}${av}<div class="nb-fq">${fqH}</div></div>`,{...o,faq:false})}
+  const rg=B.reg, guestC=`<section class="panel nb-act nb-guest"><div class="nb-ah"><div class="nb-art">${art(rg)}</div><div class="nb-ai"><span class="chip2 tbst">За регистрацию</span><div class="tb-amt" data-fit>${mh(rg.val,"+")}</div><div class="tb-name">${rg.name}</div></div></div>
+    <div class="nb-btns">${ibtn("reg","guest","")}<button class="btn p" onclick="go('reg','reg')">Получить</button></div></section>`;
+  const me=o.guest?`<div class="nb-me">${hd("Бонус за регистрацию")}<div class="nb-st">${guestC}</div></div>`
+    :`<div class="nb-me">${hd("Мои бонусы")}<div class="nb-st">${act||emptyC}<div class="nb-promo panel">${promoBox("page")}</div>${qz}</div></div>`;
+  CUR=curNow();
+  const rc=cards.length&&cards.length<rcW&&(rw+12)/cards.length-12<=420?cards.length:rcW;
+  const n=Math.max(4,rc*2), cut=cards.length>n+1;
+  /* D30-пусто: нет бонусов в валюте — плашка с действием «Все валюты» */
+  const none=`<div class="panel nb-none-av"><img class="art" src="${ASSET.empty}" alt=""><div><b>Для ${code(PF)} бонусов нет</b></div><button class="btn s" onclick="PF='all';draw()">Все валюты</button></div>`;
+  const F=faq(), fi=F.indexOf('<h2 class="sh fqh"'), fq=F.slice(fi);
+  const hcol=rw>=1100?4:rw>=520?2:1;
+  const howH=hd("Как работает бонус","","Отыграли, и деньги ваши")+`<div class="nb-steps" style="--hc:${hcol}">${HOW.map(([a,t,d],i)=>`<div class="nst"><div class="nsi"><img class="art" src="${ASSET[a]}" alt=""><span class="hn">${i+1}</span></div><div class="nsb"><b>${t}</b><span>${d}</span></div></div>`).join("")}</div>`;
+  const fqH=fq.replace(/<h2 class="sh fqh">[\s\S]*?<\/h2>/,hd("Частые вопросы"));
+  const av=`<div class="nb-av">${hd("Доступные бонусы",o.guest?"":curSw(o.keys||ALL))}
+    ${cards.length?`<div class="grid nb-grid ${cut?"cut":""}" data-z="1">${cards.map((h,i)=>h.replace('<div class="cw ',`<div class="cw ${cut&&i>=n?"hid ":""}`)).join("")}</div>${cut?moreBtn("const g=this.parentElement.previousElementSibling;g.classList.toggle('cut');this.textContent=g.classList.contains('cut')?'Показать ещё':'Свернуть';fitAll()"):""}`:none}
+    <div class="nb-how">${howH}</div><div class="nb-fq ${rw>=900?"two":""}">${fqH}</div></div>`;
+  CUR=PC();
+  return site(`<div class="nb ${two?"dk2":"mb"} ${nar?"nar":""} ${lw<400||!two?"cp":""}" style="--rc:${rc};--lw:${lw}px">${me}${av}</div>`,{...o,faq:false})}
 
 /* ══ Клуб v2 (24.11) ══════════════════════════════════════════════════════
    Страница: шапка «Ваш уровень» (кольцо прогресса вокруг значка) → «Награда за уровень» (Забрать) →
