@@ -2055,6 +2055,26 @@ body[data-g="b"] .states [data-g="c"],body[data-g="c"] .states [data-g="b"]{disp
 .nb.cp .nb-promo .pw .pstub .art{width:44px!important;height:44px!important}
 .nb.cp .nb-promo .pw .promo2 .pbody{padding:12px 10px!important}
 .nb.cp .nb-promo .pw .promo2 .pr .btn{padding:0 12px!important}
+/* 27.11 вечер: «Как работает» — одна панель-шагомер, не 4 больших плитки */
+.nb-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--card);border-radius:16px;box-shadow:0 0 0 1px rgba(233,233,237,.07);padding:20px 8px;position:relative}
+.nst{display:grid;justify-items:center;text-align:center;gap:12px;padding:0 12px;position:relative}
+.nst+.nst::before{content:"";position:absolute;top:32px;left:calc(-50% + 44px);right:calc(50% + 44px);border-top:1px dashed rgba(233,233,237,.18)}
+.nsi{position:relative;width:64px;height:64px;border-radius:16px;display:grid;place-items:center;background:rgba(233,233,237,.04)}
+.nsi .art{width:52px;height:52px}
+.nsi .hn{position:absolute;top:-6px;left:-6px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:600;background:#2A2536;color:var(--title);box-shadow:0 0 0 1px rgba(233,233,237,.12)}
+.nsb{display:grid;gap:4px}.nsb b{font-size:15px;line-height:20px;font-weight:600;color:var(--title)}.nsb span{font-size:13px;line-height:18px;color:var(--muted)}
+.nb-steps.v{grid-template-columns:minmax(0,1fr);padding:8px 20px;row-gap:0}
+.nb-steps.v .nst{grid-template-columns:64px minmax(0,1fr);justify-items:start;text-align:left;align-items:center;column-gap:16px;padding:12px 0}
+.nb-steps.v .nst+.nst::before{top:-12px;bottom:auto;left:32px;right:auto;height:24px;border-top:0;border-left:1px dashed rgba(233,233,237,.18)}
+/* гость: строки как на купоне */
+.nb-act .rows{margin:0}
+/* нет активного: тот же размер, что у активного, и кнопка в кассу */
+.nb-empty{min-height:0}
+.nb-empty .nb-btns .btn.p{flex:1}
+/* «Показать ещё» в очереди: общий компонент, по центру */
+.nb-q .more{margin:8px 0 8px;justify-content:center}
+.nb-steps.g2{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:24px;padding:8px 20px}
+.nb-steps.g2 .nst+.nst::before{display:none}
 </style>
 </head>
 <body>
@@ -2471,7 +2491,7 @@ function cashier(o){
     const sb=B[CASH.sel]; if(sb&&!o.keepA&&sb.min>CASH.A) CASH.A=sb.min; if(sb&&!CASH.keys.includes(CASH.sel)) CASH.keys=[CASH.sel,...CASH.keys];} o=CO;
   if(o.crypto&&!CURS[CUR].cr) CUR="USDT"; if(!o.crypto&&CURS[CUR].cr) CUR="USD";
   if(PROMO.st==="ok"&&!CASH.keys.includes("promo")) CASH.keys=["promo",...CASH.keys];
-  const bonusStep=o.empty?promoBox("cash"):opts(); /* 26.11: промокод — первая плитка в сетке бонусов (без длинной полосы) */
+  const bonusStep=o.empty?`<div class="tiles" id="opts">${tile("none")}</div>`:opts(); /* 27.11: нет бонусов в валюте — только «Без бонуса» (временно, пока так работает) */ /* 26.11: промокод — первая плитка в сетке бонусов (без длинной полосы) */
   const nav=header({nav:["by Enigma","Казино","Рилсы","Чат","Касса","Бонусы"],navOn:"Касса"});
   const side=`<aside class="ops"><h3>Последние операции<a>Вся история</a></h3><div class="box">Операций пока нет</div></aside>`;
   if(o.crypto) return `${nav}<div class="cash"><div class="cash-main">${cashHero()}
@@ -2777,20 +2797,21 @@ go("main",undefined,true);
    Справа резиновая сетка: «Доступные бонусы» (пакет + к депозиту одной сеткой), под ней «Как работает». Все колонки сетки одной ширины,
    «Как работает» стоит в тех же колонках, что и купоны. Телефон и iPad: всё в одну колонку, порядок: мои, доступные, как работает, вопросы */
 function nbPage(o={},cols){const fw=+document.getElementById("frame").dataset.w, dk=!!cols, mx=dk?MX(fw):(fw<600?16:32),
-  cw=fw-(dk&&CHAT?410:0)-2*mx, lw=cw>=900?420:380, two=fw>=600, rw=two?cw-lw-24:cw, rcW=Math.max(1,Math.floor((rw+12)/282)), nar=two&&rw<520;
+  cw=fw-(dk&&CHAT?410:0)-2*mx, lw=cw>=1100?420:360, two=fw>=600, rw=two?cw-lw-24:cw, rcW=Math.max(1,Math.floor((rw+12)/282)), nar=two&&rw<520;
   /* 27.11: две колонки на всех ширинах, кроме телефона. Слева 420 (на iPad 360), справа сколько влезет, хоть 1 купон */
   /* две колонки, только если справа влезает хотя бы 2 купона; иначе (1440 с чатом, iPad, телефон) всё друг под другом */
   CUR=PC();const k=ST.act,a=k?PB[k]:null,b=k?B[k]:null,p=k?Math.min(100,Math.round(a.done/a.need*100)):0,q=ST.queue||[];
   const act=!k?"":`<section class="panel nb-act"><div class="nb-ah"><div class="nb-art">${art(b)}</div><div class="nb-ai"><span class="chip2 tbst">Отыгрывается</span><div class="tb-amt" data-fit>${mh(a.amt)}</div><div class="tb-name">${b.name}</div></div></div>
     <div class="nb-prog"><div class="nb-bar"><i style="width:${p}%"></i></div><div class="nb-pr"><span>Отыграно <b>${m(a.done)}</b> из ${m(a.need)}</span>${a.dl?`<span class="d">${I.clock}до ${a.dl}</span>`:""}</div></div>
     <div class="nb-btns"><button class="btn p" onclick="go('main')">Играть</button><button class="btn s" onclick="openCancel('${k}')">Отменить</button>${ibtn(k,"view","")}</div></section>`;
-  const qz=q.length?`<section class="panel nb-q ${q.length>3?"cut":""}"><span class="eyebrow">Следующие</span>${q.map(nxRow).join("")}${q.length>3?`<button class="btn s sm nb-more" onclick="const s=this.closest('.nb-q');s.classList.toggle('cut');this.textContent=s.classList.contains('cut')?'Ещё ${q.length-3}':'Свернуть'">Ещё ${q.length-3}</button>`:""}</section>`:"";
+  const qz=q.length?`<section class="panel nb-q ${q.length>3?"cut":""}"><span class="eyebrow">Следующие</span>${q.map(nxRow).join("")}${q.length>3?moreBtn("const s=this.closest('.nb-q');s.classList.toggle('cut');this.textContent=s.classList.contains('cut')?'Показать ещё':'Свернуть'"):""}</section>`:"";
   const hd=(t,sub,x="")=>`<div class="nb-hd"><div><h2>${t}</h2><p>${sub}</p></div>${x}</div>`;
   /* гость: бонус за регистрацию тем же блоком, что активный. Нет активного: пустой блок с подсказкой */
   const rg=B.reg, guestC=`<section class="panel nb-act"><div class="nb-ah"><div class="nb-art">${art(rg)}</div><div class="nb-ai"><span class="chip2 tbst">За регистрацию</span><div class="tb-amt" data-fit>${mh(rg.val,"+")}</div><div class="tb-name">${rg.name}</div></div></div>
-    <div class="nb-pr"><span>Вейджер <b>${wag(rg)}</b></span></div>
+    ${rows(rg)}
     <div class="nb-btns"><button class="btn p" onclick="go('reg','reg')">Регистрация</button><button class="btn s">Войти</button>${ibtn("reg","guest","")}</div></section>`;
-  const emptyC=`<section class="panel nb-act nb-empty"><div class="nb-ah"><div class="nb-art"><img class="art" src="${ASSET.empty}" alt=""></div><div class="nb-ai"><div class="tb-name">Активного бонуса нет</div><p>Возьмите любой из доступных: он появится здесь</p></div></div></section>`;
+  const emptyC=`<section class="panel nb-act nb-empty"><div class="nb-ah"><div class="nb-art"><img class="art" src="${ASSET.empty}" alt=""></div><div class="nb-ai"><div class="tb-name">Активного бонуса нет</div><p>Пополните счёт и заберите бонус к депозиту</p></div></div>
+    <div class="nb-btns"><button class="btn p" onclick="go('cash')">Пополнить</button></div></section>`;
   const me=o.guest?`<div class="nb-me">${hd("Бонус за регистрацию","Зарегистрируйтесь, и он сразу начнёт отыгрываться")}<div class="nb-st">${guestC}</div></div>`
     :`<div class="nb-me">${hd("Мои бонусы","Отыгрывается один, остальные ждут очереди")}<div class="nb-st">${act||emptyC}<div class="nb-promo">${promoBox("page")}</div>${qz}</div></div>`;
   CUR=curNow();
@@ -2800,10 +2821,10 @@ function nbPage(o={},cols){const fw=+document.getElementById("frame").dataset.w,
   const rc=cards.length<rcW&&(rw+12)/cards.length-12<=420?cards.length:rcW, hc=Math.min(4,rcW);
   const n=Math.max(4,rc*2), cut=cards.length>n+1;
   const F=faq(), fi=F.indexOf('<h2 class="sh fqh"'), how=F.slice(0,fi), fq=F.slice(fi);
-  const howH=how.replace(/<h2 class="sh">Как работает бонус<\/h2><p class="shsub">Отыграли, и деньги ваши<\/p>/,hd("Как работает бонус","Отыграли, и деньги ваши"));
+  const howH=hd("Как работает бонус","Отыграли, и деньги ваши")+`<div class="nb-steps ${rw<520?"v":rw<760?"v g2":""}">${HOW.map(([a,t,d],i)=>`<div class="nst"><div class="nsi"><img class="art" src="${ASSET[a]}" alt=""><span class="hn">${i+1}</span></div><div class="nsb"><b>${t}</b><span>${d}</span></div></div>`).join("")}</div>`;
   const av=`<div class="nb-av">${hd("Доступные бонусы","Приветственный пакет и бонусы к депозиту",curSw(o.keys||ALL))}
     <div class="grid nb-grid ${cut?"cut":""}" data-z="1">${cards.map((h,i)=>h.replace('<div class="cw ',`<div class="cw ${cut&&i>=n?"hid ":""}`)).join("")}</div>${cut?moreBtn("const g=this.parentElement.previousElementSibling;g.classList.toggle('cut');this.textContent=g.classList.contains('cut')?'Показать ещё':'Свернуть';fitAll()"):""}
-    <div class="nb-how" style="--rc:${hc}">${howH}</div></div>`;
+    <div class="nb-how">${howH}</div></div>`;
   const fqH=fq.replace(/<h2 class="sh fqh">[\s\S]*?<\/h2>/,hd("Частые вопросы","Коротко о вейджере, сроках и очереди"));
   CUR=PC();
   return site(`<div class="nb ${two?"dk2":"mb"} ${nar?"nar":""} ${lw<400||!two?"cp":""}" style="--rc:${rc};--lw:${lw}px">${me}${av}<div class="nb-fq">${fqH}</div></div>`,{...o,faq:false})}
